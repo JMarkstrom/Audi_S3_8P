@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZF electric power steering maps compared</title>
+<style>
+  :root, html[data-theme="light"]{
+    --bg:#f3f3ef; --panel:#fff; --panel2:#ecece8; --line:#d2d2ca;
+    --grid:#e6e6de; --fg:#1c1c1c; --dim:#5c5c5c; --dimmer:#7a7a7a;
+    --ok:#2f8a22; --warn:#a67c00; --danger:#c62828;
+    --code-fg:#333; --pill-on:#2b2b2b; --pill-on-line:#2b2b2b;
+    --tip-bg:#fff; --tip-line:#c8c8c0; --note-edge:#c8c8c0;
+    --alert-bg:#fff6d4; --danger-bg:#fde8e8; --info:#1565c0; --info-bg:#e8f1fb;
+  }
+  html[data-theme="dark"]{
+    --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
+    --grid:#454545; --fg:#e8e8e8; --dim:#a8a8a8; --dimmer:#7d7d7d;
+    --ok:#6fcf3f; --warn:#ffd21e; --danger:#ff5a5a;
+    --code-fg:#dcdcdc; --pill-on:#4a4a4a; --pill-on-line:#5d5d5d;
+    --tip-bg:#1e1e1e; --tip-line:#555; --note-edge:#5d5d5d;
+    --alert-bg:#3d3518; --danger-bg:#3d1818; --info:#64b5f6; --info-bg:#18304d;
+  }
+  html{color-scheme:light}
+  html[data-theme="dark"]{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 72px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 6px}
+  .top h1{margin:0;flex:1}
+  h1{font-size:26px;font-weight:600;margin:0 0 6px}
+  h2{font-size:19px;font-weight:600;margin:44px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
+  h3{font-size:15px;font-weight:600;margin:24px 0 6px}
+  p{margin:0 0 12px;color:var(--dim)}
+  p.lede{margin-bottom:8px}
+  p.tight{margin-bottom:6px}
+  details.intro{margin:0 0 8px}
+  details.intro summary{
+    cursor:pointer;color:var(--dim);font-size:13px;list-style:none;
+    display:flex;align-items:center;gap:6px;width:fit-content;
+    user-select:none}
+  details.intro summary::-webkit-details-marker{display:none}
+  details.intro summary::before{
+    content:"";width:0;height:0;border:4px solid transparent;
+    border-left:6px solid var(--dimmer);margin-right:2px}
+  details.intro[open] summary::before{
+    border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:6px solid var(--dimmer);border-bottom:0;margin-top:2px}
+  details.intro summary:hover{color:var(--fg)}
+  details.intro .body{margin-top:10px}
+  code{font-family:Consolas,"SF Mono",monospace;font-size:.9em;
+       background:var(--panel2);padding:1px 5px;border-radius:3px;color:var(--code-fg)}
+  .sub{color:var(--dimmer);font-size:12.5px;margin-top:8px}
+  .cars{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 8px}
+  .car{flex:1 1 280px;background:var(--panel);border:1px solid var(--line);
+       border-radius:6px;padding:12px 14px}
+  .car .nm{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}
+  .sw{width:22px;height:3px;border-radius:2px;display:inline-block}
+  .car dl{margin:10px 0 0;display:grid;grid-template-columns:7em 1fr;gap:4px 10px;
+          font-size:12.5px;line-height:1.45}
+  .car dt{color:var(--dim);font-weight:500}
+  .car dd{margin:0;font-family:Consolas,monospace;color:var(--fg);overflow-wrap:anywhere}
+  .car button.copy{
+    display:block;width:100%;margin:0;padding:0;border:0;border-radius:3px;
+    background:transparent;font:inherit;font-family:Consolas,monospace;color:inherit;
+    text-align:left;cursor:pointer;overflow-wrap:anywhere}
+  .car button.copy:hover{background:var(--panel2)}
+  .car button.copy:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+  .car button.copy.copied{color:var(--ok)}
+  .sha{word-break:break-all;overflow-wrap:anywhere}
+  .ok{color:var(--ok)} .warn{color:var(--warn)}
+  .ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 4px}
+  button.pill{background:var(--panel);color:var(--dim);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  button.pill:hover{background:var(--panel2);color:var(--fg)}
+  button.pill.on{background:var(--pill-on);color:#fff;border-color:var(--pill-on-line)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0 2px}
+  .legend button{background:none;border:0;color:var(--fg);cursor:pointer;
+    display:flex;align-items:center;gap:7px;font:inherit;font-size:12.5px;padding:2px 0}
+  .legend button.off{opacity:.34}
+  .chart{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+  .chart svg{display:block;width:100%;height:auto}
+  .tip{position:absolute;pointer-events:none;background:var(--tip-bg);border:1px solid var(--tip-line);
+    border-radius:5px;padding:7px 9px;font-size:12px;white-space:nowrap;opacity:0;
+    transition:opacity .08s;font-family:Consolas,monospace;z-index:5;color:var(--fg)}
+  .tip b{font-weight:600}
+  .tip .r{display:flex;align-items:center;gap:6px;margin-top:3px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid2>div{min-width:0}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  .slider{display:flex;align-items:center;gap:12px;margin:12px 0 2px;flex-wrap:wrap}
+  .slider input[type=range]{width:320px;accent-color:#7aa9d8}
+  .slider .rv{font-family:Consolas,monospace;font-size:13px;color:var(--fg);
+              min-width:92px;display:inline-block}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:10px}
+  .tblwrap{overflow-x:auto}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  td.mono{font-family:Consolas,monospace;font-size:11.5px;line-height:1.5}
+  tr.same td{color:var(--dimmer)}
+  .tag{font-size:10.5px;padding:1px 6px;border-radius:3px;font-weight:600;letter-spacing:.03em}
+  .tag.d{background:#5a4420;color:#ffd07a}
+  .tag.s{background:#3d3d3d;color:#9a9a9a}
+  .note{background:var(--panel);border-left:3px solid var(--note-edge);border-radius:0 5px 5px 0;
+        padding:12px 16px;margin:18px 0}
+  .note.good{border-left-color:var(--ok)}
+  .note.care{border-left-color:var(--warn)}
+  .note b{color:var(--fg)}
+  .note p{margin:0;color:var(--dim)}
+  .note p+p{margin-top:8px}
+  .note.alert{background:var(--alert-bg);border:1px solid var(--warn);border-left-width:5px;
+        padding:14px 16px}
+  .note.alert p{color:var(--fg)}
+  .note.alert b{color:var(--warn)}
+  .note.alert.danger{background:var(--danger-bg);border-color:var(--danger)}
+  .note.alert.danger b{color:var(--danger)}
+  .note.alert.info{background:var(--info-bg);border-color:var(--info)}
+  .note.alert.info b{color:var(--info)}
+</style>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<div class="top">
+<h1>ZF electric power steering maps compared</h1>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+<p class="lede">Unlike earlier generations of Audi, Volkswagen, Škoda and other VAG vehicles, where steering
+characteristics were determined primarily by the mechanical hardware, PQ35-platform vehicles
+equipped with the third-generation ZF electric power steering system can have their steering feel
+changed through software. This page compares different ZF <code>.sgo</code> parameter sets used by
+the electro-mechanical steering systems across the VAG 8P/Mk6 platform. The aim is to show how the
+calibrations differ and, more importantly, what those differences may mean for the way the car
+feels to drive.</p>
+<details class="intro">
+  <summary>Why these maps differ, and what this page is not</summary>
+  <div class="body">
+    <p>Not every car supports changing the steering software, and the available software path is not
+    necessarily the same between models. In addition, some differences between calibrations are there
+    to compensate for the characteristics of the vehicle itself &mdash; including its layout, 2WD versus
+    AWD configuration, and engine weight. The five-cylinder engine used in the Audi RS models, for
+    example, is considerably heavier than the four-cylinder engines found in many of the other cars.</p>
+    <p>The comparisons that follow therefore should not be interpreted simply as a ranking of the
+    calibrations. They are intended to show the characteristics of each calibration and help owners
+    understand what changes may be achievable on their own car.</p>
+  </div>
+</details>
+
+<h2>Vehicle & Calibration Details</h2>
+<div class="cars" id="cars"></div>
+<div class="note alert">
+  <p><b>Verify the file before you use it.</b> This page does not supply the <code>.sgo</code>
+  files. Source the file you want yourself, compute its SHA-256, and compare that with the
+  digest on the card above. A match means you have the same bytes that were decoded here.
+  A mismatch means you have a different file.</p>
+</div>
+<div class="note alert danger">
+  <p><b>The curve file may not be enough.</b> Depending on the software already in the
+  steering rack, the rack itself must be upgraded before a curve can be flashed.</p>
+</div>
+<div class="note alert info">
+  <p><b>Note:</b> The numbers on this page were read from the files and cross-checked. What they
+  <i>mean</i> was not: these compiled objects have no parameter names, units or scale factors.
+  Axis labels such as speed or assist are inferences from the data, so treat the names as
+  hypotheses and the values as solid.</p>
+  <p>The assist ladder is the one inference checked on the road: maps 1&ndash;5 ordered by falling
+  assist match how the TT RS, S3 and RS3 feel. The secondary speed-indexed maps predict the
+  opposite and do not match, so their role is still unknown.</p>
+</div>
+
+<h2>The Steering-Assist Ladder</h2>
+<p>The six largest records are 8-breakpoint curves stored back to back. Maps 1&ndash;5 form a
+graduated assist ladder, with map 1 providing the most assist and map 5 the least. Map 6 breaks
+this pattern and is byte-identical across all seven files, so it is not part of the speed
+ladder.</p>
+<p>This is the main structure that distinguishes the calibrations from the driver's seat. The
+map 1&ndash;5 ordering is also supported by on-road impressions: the calibration with the most
+map-1 assist and least map-5 assist feels lightest when parking and firmest at speed.</p>
+<div class="ctl" id="assistTabs"></div>
+<div class="ctl" id="assistOpts"></div>
+<div class="legend" id="assistLegend"></div>
+<div class="chart" id="assistChart"></div>
+<p class="sub" id="assistCap"></p>
+
+<h3>One car at a time: the whole ladder</h3>
+<p class="tight">The same six curves grouped by car, which shows how widely each manufacturer
+spreads its ladder from most to least assist.</p>
+<div class="ctl" id="ladderTabs"></div>
+<div class="legend" id="ladderLegend"></div>
+<div class="chart" id="ladderChart"></div>
+<p class="sub">Assist output (raw counts) versus steering torque input (raw counts) - Source:
+records 0x05E1DC, 0x05E248, 0x05E2B4, 0x05E320, 0x05E38C, 0x05E3F8.</p>
+
+<h2>Comparing Steering Effort</h2>
+<p>Because maps 1 to 5 are ordered by falling assist, the ladder can be collapsed into a single
+line per car. Drag the slider to pick an operating point. <b>Effort mode</b> asks how much steering
+torque each map needs to reach a fixed assist output, which rises across the ladder like a
+conventional effort-versus-speed plot. <b>Assist mode</b> asks how much assist each map delivers at
+a fixed input torque, which falls.</p>
+<p>The operating point matters. Keep it in the everyday part of the curves, which is where the
+ordering is meaningful. Push the effort target above roughly 800 counts and the answer gets
+dominated by the extreme top of each curve, which inverts the ranking in a way that has nothing
+to do with normal driving.</p>
+<div class="ctl" id="derivedTabs"></div>
+<div class="slider">
+  <span id="derivedLbl" style="color:var(--dim)"></span>
+  <input type="range" id="derivedRange">
+  <span class="rv" id="derivedVal"></span>
+</div>
+<div class="legend" id="derivedLegend"></div>
+<div class="chart" id="derivedChart"></div>
+<p class="sub" id="derivedCap"></p>
+
+<h2>Speed-indexed maps</h2>
+<p>These four maps are the only ones in the file with an unambiguous input axis: single-byte
+breakpoints running 0 to 250, which reads directly as vehicle speed in km/h (250 km/h is the
+platform limiter). The speed axis here is drawn to scale and shows each car's real breakpoints.
+These are secondary scalers: they do not track how the cars actually
+feel, so treat them as supporting detail rather than the main event.</p>
+<div class="ctl" id="speedTabs"></div>
+<div class="legend" id="speedLegend"></div>
+<div class="chart" id="speedChart"></div>
+<p class="sub" id="speedCap"></p>
+
+<h2>Torque-indexed falloff maps</h2>
+<p>Two maps share the assist family's input axis, both starting at a power of two - 128 and 1024 -
+and decaying from there. That makes them fixed-point multipliers with 1.0 at zero input, so they
+are shown normalised to their own starting value.</p>
+<p>The same two constants also appear as standalone scalars at <code>0x05E514</code> and <code>0x05E1D4</code>, though VW Golf GTI and VW Golf R set the first of those to 192 while the map still starts at 128, so the pairing is suggestive rather than certain.</p>
+<div class="legend" id="decayLegend"></div>
+<div class="grid2">
+  <div>
+    <h3>0x05E520 <span style="color:var(--dimmer);font-weight:400">full scale 128</span></h3>
+    <div class="chart" id="decay0"></div>
+  </div>
+  <div>
+    <h3>0x05E574 <span style="color:var(--dimmer);font-weight:400">full scale 1024</span></h3>
+    <div class="chart" id="decay1"></div>
+  </div>
+</div>
+<p class="sub">Multiplier, normalised to each curve's own value at zero input, versus input
+(raw counts) - Source: records 0x05E520 and 0x05E574. VW Golf GTI and VW Golf R retain about 77% of their starting value at the top of both maps, where the others fall to 20-39%.</p>
+
+<h2>The ten-point map with a geometric input axis</h2>
+<p>Record <code>0x05E490</code> is the only 10-breakpoint curve. Its input steps grow by roughly
+1.7x out to 13714 while the output stays close to linear, an axis shaped for a quantity with a
+very wide dynamic range. All seven cars share the same endpoints, 0 and 13714 in, 0 and 1400 out, and differ only in the middle.</p>
+<p>Unlike the assist ladder, this curve does not appear to directly determine the speed-dependent
+steering weight described above; its exact role therefore remains uncertain.</p>
+<div class="legend" id="nlLegend"></div>
+<div class="chart" id="nlChart"></div>
+<p class="sub">Output (raw counts) versus input (raw counts, log scale because the breakpoints are
+geometric, so the first breakpoint at 0 is drawn at 1) - Source: record 0x05E490.</p>
+
+</div>
+<script>
+const D = {"cars":[{"key":"A3","label":"Audi A3","color":"#ff8a4c","dash":"8 3 2 3","sgm":"v074N2321K0___Lenkung_Reibung.sgm","id":"N232","file":"Curves/Audi A3 8P/v074N2321K0___Lenkung_Reibung.sgo","checksum":"0xC47F","ok":true,"sha256":"ee3e0e2b8f405b72520c94a7fb75a5182e92ce106499dd096cc62a4afb427814","datasets":["232","232","232"],"nominal":0,"block":"0x05E000-0x05EFFF"},{"key":"RS3","label":"Audi RS3","color":"#ffd21e","dash":"11 5","sgm":"v074N2431K0___Lenkung.sgm","id":"N243","file":"Curves/Audi RS3 8P/v074N2431K0___Lenkung.sgo","checksum":"0xB4FD","ok":true,"sha256":"40ba43a5ddfca80304f2d0233677323819479ff1258e5fb56ce65763481b1ed4","datasets":["243","243","243"],"nominal":0,"block":"0x05E000-0x05EFFF"},{"key":"S3","label":"Audi S3","color":"#4aa3ff","dash":"","sgm":"v074N2341K0___Lenkung_Reibung.sgm","id":"N234","file":"Curves/Audi S3 8P/v074N2341K0___Lenkung_Reibung.sgo","checksum":"0xC358","ok":true,"sha256":"c5d45aefb1367e08c2bf0b7df2aceb48bbcbf5b0b734cffebea2646772b36fbb","datasets":["234","234","234"],"nominal":0,"block":"0x05E000-0x05EFFF"},{"key":"TTRS","label":"Audi TTRS","color":"#6fcf3f","dash":"4 4","sgm":"v074N2398J0___Lenkung_Reibung.sgm","id":"N239","file":"Curves/Audi TTRS/v074N2398J0___Lenkung_Reibung.sgo","checksum":"0xB58A","ok":true,"sha256":"9b0d0567c907b70c69b89a044e46e260760808aaff7ee7a1c6201ea74c53139a","datasets":["239","239","239"],"nominal":0,"block":"0x05E000-0x05EFFF"},{"key":"Golf6","label":"VW Golf","color":"#c8c8c8","dash":"14 4","sgm":"v074N0671K0___Lenkung_Reibung.sgm","id":"N067","file":"Curves/VW Golf 6/v074N0671K0___Lenkung_Reibung.sgo","checksum":"0xB0E9","ok":true,"sha256":"a87d433910128ed033ea8663ba8c69086f4d7f88bf0b4dd7a8cba24ccd32dbf3","datasets":["67","67","67"],"nominal":0,"block":"0x05E000-0x05EFFF"},{"key":"Golf6GTI","label":"VW Golf GTI","color":"#e85d5d","dash":"2 2 8 2","sgm":"v074N0741K0___Lenkung_Reibung.sgm","id":"N074","file":"Curves/VW Golf 6 GTI/v074N0741K0___Lenkung_Reibung.sgo","checksum":"0xBA8D","ok":true,"sha256":"4b73ae147ad08e1d49497c29657c6ae523df081f9e50d5022e560706843ce31c","datasets":["74","74","74"],"nominal":0,"block":"0x05E000-0x05EFFF"},{"key":"GolfR","label":"VW Golf R","color":"#d38bf0","dash":"2 4","sgm":"v074N2511K0___Lenkung.sgm","id":"N251","file":"Curves/VW Golf R/v074N2511K0___Lenkung.sgo","checksum":"0xB21B","ok":true,"sha256":"969bf9f586cb0f3fea0ce3ce48fc2f716fc925fca6a0cdfd1f1e04f52bdc63a1","datasets":["250","251","252"],"nominal":1,"block":"0x05E000-0x05EFFF"}],"assist":[{"addr":"0x05E1DC","label":"Map 1","data":{"A3":{"x":[0,13,88,136,177,272,345,409],"y":[0,28,478,898,1341,2530,3527,4506]},"RS3":{"x":[0,13,55,109,177,272,329,408],"y":[0,20,187,479,1022,2230,3168,4506]},"S3":{"x":[0,13,77,136,189,272,347,397],"y":[0,30,390,879,1483,2635,3747,4510]},"TTRS":{"x":[0,13,77,136,190,272,345,417],"y":[0,125,819,1459,2048,3004,4002,5120]},"Golf6":{"x":[0,13,55,109,177,272,359,446],"y":[0,19,166,426,897,1926,3168,4506]},"Golf6GTI":{"x":[0,44,87,136,177,243,313,377],"y":[0,101,251,534,870,1711,3179,4607]},"GolfR":{"x":[0,15,58,113,184,255,325,375],"y":[0,12,131,419,1056,2087,3524,4608]}}},{"addr":"0x05E248","label":"Map 2","data":{"A3":{"x":[0,13,88,136,177,272,408,488],"y":[0,20,340,643,962,1821,3321,4506]},"RS3":{"x":[0,13,55,109,177,272,408,477],"y":[0,20,151,382,816,1658,3356,4506]},"S3":{"x":[0,14,77,136,190,278,408,501],"y":[0,23,247,552,949,1744,3154,4506]},"TTRS":{"x":[0,14,77,136,190,272,408,540],"y":[0,49,267,543,844,1440,2867,4706]},"Golf6":{"x":[0,13,55,109,177,272,408,521],"y":[0,19,134,340,716,1446,2908,4608]},"Golf6GTI":{"x":[0,13,54,110,184,272,476,500],"y":[0,21,91,296,742,1655,4096,4607]},"GolfR":{"x":[0,15,58,113,184,282,476,511],"y":[0,10,91,296,705,1655,3860,4608]}}},{"addr":"0x05E2B4","label":"Map 3","data":{"A3":{"x":[0,13,88,136,177,272,408,544],"y":[0,15,201,386,592,1219,2374,3994]},"RS3":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"S3":{"x":[0,14,77,136,190,272,408,544],"y":[0,18,139,333,585,1072,2172,3840]},"TTRS":{"x":[0,14,77,137,190,272,407,544],"y":[0,14,101,234,407,852,1857,3887]},"Golf6":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,86,255,556,1148,2400,3901]},"Golf6GTI":{"x":[0,14,55,109,184,272,476,544],"y":[0,11,54,230,611,1168,3072,4403]},"GolfR":{"x":[0,15,58,113,184,282,476,544],"y":[0,4,52,230,571,1168,2898,4229]}}},{"addr":"0x05E320","label":"Map 4","data":{"A3":{"x":[0,13,88,136,177,272,408,544],"y":[0,11,109,219,356,758,1547,2816]},"RS3":{"x":[0,13,55,109,177,273,407,544],"y":[0,3,54,185,413,873,1981,3742]},"S3":{"x":[0,14,77,136,190,272,408,544],"y":[0,12,72,188,350,689,1428,2730]},"TTRS":{"x":[0,14,77,136,191,272,408,544],"y":[0,5,62,120,226,492,1192,3441]},"Golf6":{"x":[0,13,55,109,177,273,407,544],"y":[0,5,45,163,367,758,1682,3122]},"Golf6GTI":{"x":[0,14,55,107,184,272,476,544],"y":[0,4,30,166,468,908,2481,3686]},"GolfR":{"x":[0,15,58,113,184,282,476,544],"y":[0,3,19,163,429,908,2335,3540]}}},{"addr":"0x05E38C","label":"Map 5","data":{"A3":{"x":[0,13,88,136,177,272,408,544],"y":[0,6,45,91,147,331,765,1741]},"RS3":{"x":[0,13,55,109,177,273,408,544],"y":[0,2,36,89,234,605,1442,2769]},"S3":{"x":[0,14,77,136,190,272,408,544],"y":[1,6,36,91,156,308,766,1741]},"TTRS":{"x":[0,14,77,136,190,272,408,544],"y":[0,6,33,57,88,188,533,3025]},"Golf6":{"x":[0,13,55,111,177,272,408,544],"y":[0,5,31,80,203,515,1215,2302]},"Golf6GTI":{"x":[0,14,55,107,177,272,476,544],"y":[0,3,22,95,308,705,1946,3072]},"GolfR":{"x":[0,15,58,113,184,282,476,544],"y":[0,2,14,95,308,705,1833,2959]}}},{"addr":"0x05E3F8","label":"Map 6 (fixed)","data":{"A3":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"RS3":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"S3":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"TTRS":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"Golf6":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"Golf6GTI":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]},"GolfR":{"x":[0,13,54,109,177,272,408,544],"y":[0,8,98,290,635,1321,2788,4506]}}}],"speed":{"0x05E5D4":{"A3":{"x":[0,6,28,77,150,250],"y":[51,77,110,136,154,171]},"RS3":{"x":[0,15,50,100,150,250],"y":[26,64,98,117,127,147]},"S3":{"x":[0,12,40,83,150,250],"y":[51,86,118,137,153,170]},"TTRS":{"x":[0,11,40,83,150,250],"y":[53,84,117,136,150,171]},"Golf6":{"x":[0,15,50,100,150,250],"y":[26,64,98,117,127,147]},"Golf6GTI":{"x":[0,15,50,100,150,250],"y":[27,40,62,85,103,135]},"GolfR":{"x":[0,15,50,100,150,250],"y":[27,51,68,88,107,146]}},"0x05E604":{"A3":{"x":[0,2,12,39,102,250],"y":[0,103,100,92,79,67]},"RS3":{"x":[0,7,21,51,101,250],"y":[0,48,85,113,131,160]},"S3":{"x":[0,2,20,51,105,250],"y":[0,111,111,102,93,85]},"TTRS":{"x":[0,2,20,60,125,250],"y":[0,110,106,102,112,160]},"Golf6":{"x":[0,7,21,51,101,250],"y":[0,48,85,113,131,160]},"Golf6GTI":{"x":[0,7,20,50,100,250],"y":[0,84,118,142,162,192]},"GolfR":{"x":[0,7,15,50,100,250],"y":[0,82,113,136,151,192]}},"0x05E640":{"A3":{"x":[0,50,120],"y":[83,122,156]},"RS3":{"x":[0,50,120],"y":[88,113,132]},"S3":{"x":[0,50,120],"y":[82,127,154]},"TTRS":{"x":[0,50,120],"y":[72,128,132]},"Golf6":{"x":[0,50,120],"y":[95,122,145]},"Golf6GTI":{"x":[0,50,120],"y":[83,118,133]},"GolfR":{"x":[0,50,120],"y":[78,122,137]}},"0x05E664":{"A3":{"x":[0,50,120],"y":[83,122,160]},"RS3":{"x":[0,50,120],"y":[88,113,155]},"S3":{"x":[0,50,120],"y":[82,127,160]},"TTRS":{"x":[0,50,120],"y":[72,128,155]},"Golf6":{"x":[0,50,120],"y":[95,122,160]},"Golf6GTI":{"x":[0,50,120],"y":[83,118,156]},"GolfR":{"x":[0,50,120],"y":[78,122,160]}}},"decay":{"0x05E520":{"A3":{"x":[0,14,71,164,269,542],"y":[128,116,75,46,35,25]},"RS3":{"x":[0,14,68,137,272,544],"y":[128,120,87,61,39,26]},"S3":{"x":[0,16,63,164,269,542],"y":[128,113,73,45,35,26]},"TTRS":{"x":[0,16,71,164,269,544],"y":[128,113,70,41,31,25]},"Golf6":{"x":[0,14,68,137,272,544],"y":[128,120,87,61,39,26]},"Golf6GTI":{"x":[0,10,19,41,73,136],"y":[128,120,113,105,102,99]},"GolfR":{"x":[0,10,19,38,74,136],"y":[128,120,113,106,102,99]}},"0x05E574":{"A3":{"x":[0,12,53,136,300,544],"y":[1024,934,670,489,398,354]},"RS3":{"x":[0,14,68,136,272,544],"y":[1024,973,788,635,512,401]},"S3":{"x":[0,12,45,136,300,544],"y":[1024,942,687,484,396,355]},"TTRS":{"x":[0,12,52,136,300,544],"y":[1024,922,714,512,397,358]},"Golf6":{"x":[0,14,68,136,272,544],"y":[1024,973,788,635,512,401]},"Golf6GTI":{"x":[0,15,24,40,73,136],"y":[1024,1024,973,881,819,789]},"GolfR":{"x":[0,15,24,38,74,136],"y":[1024,1024,973,881,819,792]}}},"nonlin":{"A3":{"x":[0,23,69,224,616,1198,2187,4123,7881,13714],"y":[0,11,86,228,410,569,723,915,1170,1400]},"RS3":{"x":[0,12,46,228,511,1033,2066,4123,8246,13714],"y":[0,2,32,192,390,670,940,1157,1305,1400]},"S3":{"x":[0,23,69,200,495,1128,2066,4123,7881,13714],"y":[0,12,90,240,416,600,750,940,1168,1400]},"TTRS":{"x":[0,12,58,192,476,1069,2014,4123,7881,13714],"y":[0,6,70,274,450,608,736,910,1130,1400]},"Golf6":{"x":[0,12,46,228,511,1033,2066,4123,8246,13714],"y":[0,2,32,192,390,670,940,1157,1305,1400]},"Golf6GTI":{"x":[0,2,16,245,480,2083,4132,9018,12473,13714],"y":[0,2,8,104,164,356,568,1052,1400,1400]},"GolfR":{"x":[0,1,8,245,480,2083,4132,9018,12473,13714],"y":[0,5,6,102,164,356,568,1052,1400,1400]}}};
+const CARS = D.cars, CK = CARS.map(c=>c.key);
+const COL = {}; CARS.forEach(c=>COL[c.key]=c.color);
+const LBL = {}; CARS.forEach(c=>LBL[c.key]=c.label);
+const DSH = {}; CARS.forEach(c=>DSH[c.key]=c.dash);
+
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    const light=document.documentElement.getAttribute("data-theme")==="light";
+    btn.textContent=light?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+})();
+
+/* line-style swatch so overlapping curves stay tellable apart */
+function swatch(color,dash){
+  return `<svg width="24" height="10" style="flex:0 0 auto"><line x1="1" y1="5" x2="23" y2="5"`
+    + ` stroke="${color}" stroke-width="2.4"${dash?` stroke-dasharray="${dash}"`:""}/></svg>`;
+}
+
+/* ---------- chart engine: linear/log XY line chart in inline SVG ---------- */
+/* Geometry is in SVG user units and the SVG scales to its container, so a
+   narrow container needs a narrow viewBox to keep label text readable. */
+const GEOM_WIDE   = {W:920, H:430, M:{t:18,r:22,b:52,l:66}};
+const GEOM_COMPACT= {W:470, H:330, M:{t:14,r:16,b:46,l:54}};
+
+function ticks(lo,hi,n){
+  const span=(hi-lo)||1, s0=span/n, mag=Math.pow(10,Math.floor(Math.log10(s0)));
+  const q=s0/mag; let m; if(q<=1)m=1; else if(q<=2)m=2; else if(q<=2.5)m=2.5;
+  else if(q<=5)m=5; else m=10;
+  const step=m*mag, out=[];
+  for(let v=Math.ceil(lo/step)*step; v<=hi+step*1e-9; v+=step) out.push(+v.toPrecision(12));
+  return out;
+}
+function fmt(v){
+  if(v===0) return "0";
+  const a=Math.abs(v);
+  if(a>=1000) return v.toLocaleString("en-US");
+  if(a>=1) return String(+v.toFixed(2));
+  return String(+v.toFixed(3));
+}
+function interp(xs,ys,q){
+  if(q<=xs[0]) return ys[0];
+  if(q>=xs[xs.length-1]) return ys[ys.length-1];
+  for(let i=0;i<xs.length-1;i++){
+    if(q>=xs[i]&&q<=xs[i+1]){
+      const d=xs[i+1]-xs[i];
+      return d===0?ys[i]:ys[i]+(ys[i+1]-ys[i])*(q-xs[i])/d;
+    }
+  }
+  return ys[ys.length-1];
+}
+/* invert a monotonically non-decreasing y(x) */
+function invert(xs,ys,target){
+  if(target<=ys[0]) return xs[0];
+  for(let i=0;i<ys.length-1;i++){
+    if(target>=ys[i]&&target<=ys[i+1]){
+      const d=ys[i+1]-ys[i];
+      return d===0?xs[i]:xs[i]+(xs[i+1]-xs[i])*(target-ys[i])/d;
+    }
+  }
+  return null;               /* beyond this curve's reach */
+}
+
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+
+/* Catmull-Rom through the points, emitted as cubic beziers. Mirrors the
+   "smoothed line" option of a spreadsheet chart. */
+function spline(P){
+  if(P.length<3) return P.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
+  let d="M"+P[0][0].toFixed(1)+" "+P[0][1].toFixed(1);
+  for(let i=0;i<P.length-1;i++){
+    const p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||P[i+1];
+    const c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+    const c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+    d+=" C"+c1x.toFixed(1)+" "+c1y.toFixed(1)+","+c2x.toFixed(1)+" "+c2y.toFixed(1)
+      +","+p2[0].toFixed(1)+" "+p2[1].toFixed(1);
+  }
+  return d;
+}
+
+/* opts: {xLabel,yLabel,logX,xCat:[labels],ySuffix,hidden:Set} */
+function render(host, series, opts){
+  opts=opts||{};
+  const G=opts.geom||GEOM_WIDE, W=G.W, H=G.H, M=G.M;
+  const PW=W-M.l-M.r, PH=H-M.t-M.b;
+  const vis = series.filter(s=>!(opts.hidden&&opts.hidden.has(s.key)) && s.pts.length);
+  const pool = vis.length?vis:series.filter(s=>s.pts.length);
+  if(!pool.length){host.innerHTML="";return;}
+
+  let xs=[], ys=[];
+  pool.forEach(s=>s.pts.forEach(p=>{xs.push(p[0]);ys.push(p[1]);}));
+  let x0=Math.min(...xs), x1=Math.max(...xs);
+  let y0, y1=Math.max(...ys);
+  if(opts.zeroBase===false){ y0=Math.min(...ys); }
+  else { y0=Math.min(0,Math.min(...ys)); }
+  if(opts.yMin!==undefined)y0=opts.yMin;
+  if(y1===y0)y1=y0+1;
+  const pad=(y1-y0)*0.06;
+  y1+=pad;
+  if(opts.zeroBase===false) y0-=pad;
+  if(opts.logX){ x0=Math.max(x0,1); }
+  if(x1===x0)x1=x0+1;
+
+  const cat = opts.xCat;
+  const sx = v => {
+    if(cat) return M.l + (cat.length<2?PW/2:PW*v/(cat.length-1));
+    if(opts.logX){
+      const a=Math.log10(Math.max(v,x0)), b=Math.log10(x0), c=Math.log10(x1);
+      return M.l + PW*(a-b)/((c-b)||1);
+    }
+    return M.l + PW*(v-x0)/(x1-x0);
+  };
+  const sy = v => M.t + PH - PH*(v-y0)/(y1-y0);
+
+  const yT = ticks(y0,y1,6);
+  let xT;
+  if(cat) xT = cat.map((l,i)=>({v:i,t:l}));
+  else if(opts.logX){
+    xT=[]; const lo=Math.floor(Math.log10(x0)), hi=Math.ceil(Math.log10(x1));
+    for(let e=lo;e<=hi;e++){const v=Math.pow(10,e); if(v>=x0&&v<=x1)xT.push({v:v,t:fmt(v)});}
+  }
+  else xT = ticks(x0,x1,7).filter(v=>v>=x0&&v<=x1).map(v=>({v:v,t:fmt(v)}));
+
+  let g="";
+  yT.forEach(v=>{g+=`<line x1="${M.l}" y1="${sy(v).toFixed(1)}" x2="${M.l+PW}" y2="${sy(v).toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>`;});
+  xT.forEach(o=>{g+=`<line x1="${sx(o.v).toFixed(1)}" y1="${M.t}" x2="${sx(o.v).toFixed(1)}" y2="${M.t+PH}" stroke="var(--grid)" stroke-width="1"/>`;});
+
+  let ax=`<line x1="${M.l}" y1="${M.t+PH}" x2="${M.l+PW}" y2="${M.t+PH}" stroke="var(--line)"/>`
+        +`<line x1="${M.l}" y1="${M.t}" x2="${M.l}" y2="${M.t+PH}" stroke="var(--line)"/>`;
+  yT.forEach(v=>{ax+=`<text x="${M.l-9}" y="${(sy(v)+4).toFixed(1)}" fill="var(--dim)" font-size="11.5" text-anchor="end">${fmt(v)}${opts.ySuffix||""}</text>`;});
+  xT.forEach(o=>{ax+=`<text x="${sx(o.v).toFixed(1)}" y="${M.t+PH+20}" fill="var(--dim)" font-size="11.5" text-anchor="middle">${esc(o.t)}</text>`;});
+  ax+=`<text x="${M.l+PW/2}" y="${H-8}" fill="var(--dimmer)" font-size="12" text-anchor="middle">${esc(opts.xLabel||"")}</text>`;
+  ax+=`<text x="16" y="${M.t+PH/2}" fill="var(--dimmer)" font-size="12" text-anchor="middle" transform="rotate(-90 16 ${M.t+PH/2})">${esc(opts.yLabel||"")}</text>`;
+
+  let ln="";
+  vis.forEach(s=>{
+    const P=s.pts.map((p,i)=>[sx(cat?i:p[0]), sy(p[1])]);
+    const d=opts.smooth ? spline(P)
+          : P.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
+    ln+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2.2"`
+      + (s.dash?` stroke-dasharray="${s.dash}"`:"")
+      + ` stroke-linejoin="round" stroke-linecap="round"/>`;
+    s.pts.forEach((p,i)=>{ln+=`<circle cx="${sx(cat?i:p[0]).toFixed(1)}" cy="${sy(p[1]).toFixed(1)}" r="2.9" fill="${s.color}"/>`;});
+  });
+
+  host.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`
+    + g + ax + ln
+    + `<line class="cx" x1="0" y1="${M.t}" x2="0" y2="${M.t+PH}" stroke="var(--dimmer)" stroke-dasharray="3 3" opacity="0"/>`
+    + `<rect class="hit" x="${M.l}" y="${M.t}" width="${PW}" height="${PH}" fill="transparent"/>`
+    + `</svg><div class="tip"></div>`;
+
+  const svg=host.querySelector("svg"), tip=host.querySelector(".tip"),
+        cx=host.querySelector(".cx"), hit=host.querySelector(".hit");
+  hit.addEventListener("mousemove", ev=>{
+    const r=svg.getBoundingClientRect(), k=W/r.width;
+    const px=(ev.clientX-r.left)*k;
+    let xv, idx=null;
+    if(cat){
+      idx=Math.max(0,Math.min(cat.length-1,Math.round((px-M.l)/(PW/Math.max(1,cat.length-1)))));
+      xv=idx;
+    } else if(opts.logX){
+      const b=Math.log10(x0), c=Math.log10(x1);
+      xv=Math.pow(10,b+(px-M.l)/PW*(c-b));
+    } else xv=x0+(px-M.l)/PW*(x1-x0);
+
+    cx.setAttribute("x1",sx(xv).toFixed(1));
+    cx.setAttribute("x2",sx(xv).toFixed(1));
+    cx.setAttribute("opacity","1");
+    let head = cat ? cat[idx] : (opts.xLabel||"x").split(" (")[0]+" "+fmt(xv);
+    let rows="";
+    vis.forEach(s=>{
+      const v = cat ? (s.pts[idx]?s.pts[idx][1]:null)
+                    : interp(s.pts.map(p=>p[0]),s.pts.map(p=>p[1]),xv);
+      if(v===null||v===undefined) return;
+      rows+=`<div class="r">${swatch(s.color,s.dash)}`
+          + `${esc(s.name)} <b>${fmt(v)}${opts.ySuffix||""}</b></div>`;
+    });
+    tip.innerHTML=`<b>${esc(head)}</b>${rows}`;
+    tip.style.opacity="1";
+    const lx=ev.clientX-r.left, ly=ev.clientY-r.top;
+    tip.style.left=Math.min(lx+14, r.width-tip.offsetWidth-8)+"px";
+    tip.style.top=Math.max(4, ly-10)+"px";
+  });
+  hit.addEventListener("mouseleave",()=>{tip.style.opacity="0";cx.setAttribute("opacity","0");});
+}
+
+/* meta is an optional {key:{color,dash,label}} map for series that are not cars */
+function legend(host, keys, hidden, redraw, meta){
+  host.innerHTML="";
+  keys.forEach(k=>{
+    const m = meta && meta[k];
+    const b=document.createElement("button");
+    b.className = hidden.has(k)?"off":"";
+    b.innerHTML = m ? swatch(m.color,m.dash)+m.label : swatch(COL[k],DSH[k])+LBL[k];
+    b.onclick=()=>{hidden.has(k)?hidden.delete(k):hidden.add(k); redraw();};
+    host.appendChild(b);
+  });
+}
+function tabs(host, items, cur, pick){
+  host.innerHTML="";
+  items.forEach((it,i)=>{
+    const b=document.createElement("button");
+    b.className="pill"+(i===cur?" on":"");
+    b.textContent=it;
+    b.onclick=()=>pick(i);
+    host.appendChild(b);
+  });
+}
+
+/* ---------------------------- car cards ---------------------------- */
+document.getElementById("cars").innerHTML = CARS.map(c=>{
+  const multi = new Set(c.datasets).size>1;
+  const ds = c.datasets.join("/")
+    + (multi ? ` <span class="warn">reading ${c.datasets[c.nominal]}</span>` : "");
+  const file = c.file.split("/").pop();
+  const fileHtml = esc(file).replace(/_/g,"_<wbr>");
+  return `
+  <div class="car">
+    <div class="nm">${swatch(c.color,c.dash)}${c.label}</div>
+    <dl>
+      <dt>ID</dt><dd>${c.id}</dd>
+      <dt>File</dt><dd><button type="button" class="copy" data-copy="${esc(file)}" title="Click to copy">${fileHtml}</button></dd>
+      <dt>Checksum</dt><dd>${c.checksum} <span class="${c.ok?"ok":"warn"}">${c.ok?"verified":"MISMATCH"}</span></dd>
+      <dt>Datasets</dt><dd>${ds}</dd>
+      <dt>SHA-256</dt><dd class="sha"><button type="button" class="copy" data-copy="${esc(c.sha256)}" title="Click to copy">${esc(c.sha256)}</button></dd>
+    </dl>
+  </div>`;}).join("");
+document.querySelectorAll("#cars button.copy").forEach(btn=>{
+  const shown=btn.innerHTML;
+  btn.addEventListener("click", ()=>{
+    const text=btn.getAttribute("data-copy")||"";
+    const ok=()=>{
+      btn.classList.add("copied"); btn.textContent="Copied";
+      clearTimeout(btn._copyT);
+      btn._copyT=setTimeout(()=>{btn.classList.remove("copied");btn.innerHTML=shown;},1100);
+    };
+    const fallback=()=>{
+      const ta=document.createElement("textarea");
+      ta.value=text; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      const went=document.execCommand("copy");
+      document.body.removeChild(ta);
+      if(went) ok();
+    };
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(ok).catch(fallback);
+    } else fallback();
+  });
+});
+
+/* --------------------------- speed maps --------------------------- */
+const SPEED_ADDR=Object.keys(D.speed);
+let sTab=0, sHid=new Set();
+function drawSpeed(){
+  const a=SPEED_ADDR[sTab];
+  const series=CK.map(k=>({key:k,name:LBL[k],color:COL[k],dash:DSH[k],
+      pts:D.speed[a][k].x.map((x,i)=>[x,D.speed[a][k].y[i]])}));
+  render(document.getElementById("speedChart"),series,
+    {xLabel:"Vehicle speed (km/h, inferred from the 0-250 breakpoint range)",
+     yLabel:"Output (raw byte value, 0-255)",hidden:sHid});
+  legend(document.getElementById("speedLegend"),CK,sHid,drawSpeed);
+  document.getElementById("speedCap").innerHTML =
+    "Record "+a+", single-byte breakpoints drawn to each car's real axis. "
+    + "These maps do not track overall steering feel; isolate a car in the legend to read it.";
+  tabs(document.getElementById("speedTabs"),SPEED_ADDR,sTab,i=>{sTab=i;drawSpeed();});
+}
+drawSpeed();
+
+/* --------------------------- assist ladder --------------------------- */
+let aTab=0, aHid=new Set(), aNorm=false;
+function drawAssist(){
+  const m=D.assist[aTab];
+  const series=CK.map(k=>{
+    const c=m.data[k], pk=Math.max.apply(null,c.y)||1;
+    return {key:k,name:LBL[k],color:COL[k],dash:DSH[k],
+      pts:c.x.map((x,i)=>[x, aNorm? +(c.y[i]/pk*100).toFixed(2) : c.y[i]])};
+  });
+  render(document.getElementById("assistChart"),series,
+    {xLabel:"Steering torque input (raw counts)",
+     yLabel:aNorm?"Assist output (% of that car's own peak)":"Assist output (raw counts)",
+     ySuffix:aNorm?"%":"",hidden:aHid});
+  legend(document.getElementById("assistLegend"),CK,aHid,drawAssist);
+  tabs(document.getElementById("assistTabs"),D.assist.map(x=>x.label),aTab,i=>{aTab=i;drawAssist();});
+  const o=document.getElementById("assistOpts");
+  o.innerHTML="";
+  [["Raw counts",false],["Normalise each car to its own peak",true]].forEach(([t,v])=>{
+    const b=document.createElement("button");
+    b.className="pill"+(aNorm===v?" on":""); b.textContent=t;
+    b.onclick=()=>{aNorm=v;drawAssist();}; o.appendChild(b);
+  });
+  const peaks=CK.map(k=>LBL[k]+" peaks at "+Math.max.apply(null,m.data[k].y)).join(", ");
+  document.getElementById("assistCap").innerHTML =
+    "Record "+m.addr+" ("+m.label+"), 8 breakpoints - "+peaks+"."
+    + (m.label.indexOf("fixed")>=0
+        ? " This map is byte-identical in all files, which is why the lines sit exactly on top of each other."
+        : "");
+}
+drawAssist();
+
+/* --------------------------- per-car ladder --------------------------- */
+const LCOL=["#7fc7ff","#57a8e8","#3f86c4","#2f6396","#20456a","#c98b2f"];
+let lTab=0;
+function drawLadder(){
+  const k=CK[lTab];
+  const series=D.assist.map((m,i)=>({key:m.addr,name:m.label,color:LCOL[i],
+      pts:m.data[k].x.map((x,j)=>[x,m.data[k].y[j]])}));
+  render(document.getElementById("ladderChart"),series,
+    {xLabel:"Steering torque input (raw counts)",yLabel:"Assist output (raw counts)"});
+  const host=document.getElementById("ladderTabs");
+  host.innerHTML="";
+  CK.forEach((c,i)=>{
+    const b=document.createElement("button");
+    b.className="pill"+(i===lTab?" on":""); b.textContent=LBL[c];
+    b.onclick=()=>{lTab=i;drawLadder();}; host.appendChild(b);
+  });
+  document.getElementById("ladderLegend").innerHTML = D.assist.map((m,i)=>
+    `<span style="display:flex;align-items:center;gap:7px;font-size:12.5px">`
+    +`${swatch(LCOL[i],"")}${m.label}</span>`).join("");
+}
+drawLadder();
+
+/* --------------------------- derived view --------------------------- */
+const LADDER=D.assist.slice(0,5);
+const CATS=LADDER.map((m,i)=>"Map "+(i+1));
+let dMode=0, dHid=new Set(), dVal=300;
+const RANGE={0:{min:100,max:2000,step:25,def:300},1:{min:50,max:544,step:2,def:136}};
+function drawDerived(){
+  const R=RANGE[dMode], r=document.getElementById("derivedRange");
+  r.min=R.min; r.max=R.max; r.step=R.step;
+  if(+r.value<R.min||+r.value>R.max){dVal=R.def;}
+  r.value=dVal;
+  document.getElementById("derivedLbl").textContent =
+    dMode===0?"Target assist output:":"Steering torque input:";
+  document.getElementById("derivedVal").textContent = dVal+" counts";
+
+  const series=CK.map(k=>{
+    const pts=[];
+    LADDER.forEach((m,i)=>{
+      const c=m.data[k];
+      const v = dMode===0 ? invert(c.x,c.y,dVal) : interp(c.x,c.y,dVal);
+      if(v!==null&&v!==undefined) pts.push([i,+v.toFixed(1)]);
+    });
+    return {key:k,name:LBL[k],color:COL[k],dash:DSH[k],pts:pts};
+  });
+  render(document.getElementById("derivedChart"),series,
+    {xCat:CATS,hidden:dHid,
+     xLabel:"Assist map 1 to 5 (inferred as increasing vehicle speed)",
+     yLabel:dMode===0?"Steering torque needed (raw counts)":"Assist delivered (raw counts)"});
+  legend(document.getElementById("derivedLegend"),CK,dHid,drawDerived);
+  tabs(document.getElementById("derivedTabs"),
+    ["Effort: torque needed for fixed assist","Assist: output at fixed torque"],dMode,
+    i=>{dMode=i;dVal=RANGE[i].def;drawDerived();});
+  document.getElementById("derivedCap").innerHTML = (dMode===0
+    ? "Each point is the input torque at which that map first reaches "+dVal+" counts of assist, "
+      + "found by inverting the curve by linear interpolation. A map is skipped where it never "
+      + "reaches the target. Higher means heavier steering."
+      + (dVal>800 ? " <b style='color:var(--warn)'>Above about 800 counts this is dominated by the "
+        + "extreme top of each curve and the ranking stops reflecting normal driving.</b>" : "")
+    : "Each point is that map's output at an input of "+dVal+" counts, by linear interpolation "
+      + "between breakpoints. Higher means lighter steering.");
+}
+drawDerived();
+document.getElementById("derivedRange").addEventListener("input",e=>{
+  dVal=+e.target.value; drawDerived();
+});
+
+/* --------------------------- decay maps --------------------------- */
+document.getElementById("decayLegend").innerHTML = CARS.map(c=>
+  `<span style="display:flex;align-items:center;gap:7px;font-size:12.5px">`
+  +`${swatch(c.color,c.dash)}${c.label}</span>`).join("");
+Object.keys(D.decay).forEach((a,n)=>{
+  const series=CK.map(k=>{
+    const c=D.decay[a][k], f=c.y[0]||1;
+    return {key:k,name:LBL[k],color:COL[k],dash:DSH[k],
+      pts:c.x.map((x,i)=>[x,+(c.y[i]/f).toFixed(4)])};
+  });
+  const host=document.getElementById("decay"+n);
+  render(host,series,
+    {geom:GEOM_COMPACT,xLabel:"Input (raw counts)",yLabel:"Multiplier"});
+  // #region agent log
+  (function(){
+    const lastByCar={};
+    let xMaxAll=-Infinity;
+    series.forEach(s=>{
+      const last=s.pts[s.pts.length-1];
+      lastByCar[s.key]={n:s.pts.length,lastX:last&&last[0],lastY:last&&last[1],xs:s.pts.map(p=>p[0])};
+      if(last) xMaxAll=Math.max(xMaxAll,last[0]);
+    });
+    const gr=lastByCar.GolfR||{};
+    const path=host.querySelector('path[stroke="'+COL.GolfR+'"]');
+    const G=GEOM_COMPACT, PW=G.W-G.M.l-G.M.r;
+    const lastPx=gr.lastX==null?null:G.M.l+PW*(gr.lastX-0)/(xMaxAll||1);
+    fetch('http://127.0.0.1:7405/ingest/07cf02e3-d4ef-4740-8aa2-3cc1e6186aec',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'400cf7'},body:JSON.stringify({sessionId:'400cf7',runId:'pre',hypothesisId:'A,B,C',location:'make_report.py:decay',message:'decay chart domain',data:{addr:a,chart:'decay'+n,xMaxAll:xMaxAll,golfRLastX:gr.lastX,gtiLastX:(lastByCar.Golf6GTI||{}).lastX,a3LastX:(lastByCar.A3||{}).lastX,golfRFracOfAxis:xMaxAll?gr.lastX/xMaxAll:null,golfRLastPx:lastPx,plotRightPx:G.M.l+PW,pathLen:path&&path.getTotalLength&&path.getTotalLength(),pathD:path&&path.getAttribute('d'),lastByCar:lastByCar},timestamp:Date.now()})}).catch(()=>{});
+  })();
+  // #endregion
+});
+
+/* --------------------------- nonlinear map --------------------------- */
+let nHid=new Set();
+function drawNL(){
+  const series=CK.map(k=>({key:k,name:LBL[k],color:COL[k],dash:DSH[k],
+    pts:D.nonlin[k].x.map((x,i)=>[Math.max(x,1),D.nonlin[k].y[i]])}));
+  render(document.getElementById("nlChart"),series,
+    {logX:true,xLabel:"Input (raw counts, log scale)",yLabel:"Output (raw counts)",hidden:nHid});
+  legend(document.getElementById("nlLegend"),CK,nHid,drawNL);
+}
+drawNL();
+</script>
+</body>
+</html>

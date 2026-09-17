@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audi S3 8P Owner's guides</title>
+<style>
+  :root, html[data-theme="light"]{
+    --bg:#f3f3ef; --fg:#1c1c1c; --line:#d2d2ca; --dim:#5c5c5c;
+    --panel:#fff; --link:#1a6fb5; --link-h:#0d4f86;
+  }
+  html[data-theme="dark"]{
+    --bg:#2b2b2b; --fg:#e8e8e8; --line:#4a4a4a; --dim:#a8a8a8;
+    --panel:#333; --link:#7aa9d8; --link-h:#9cc4e8;
+  }
+  html{color-scheme:light}
+  html[data-theme="dark"]{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 72px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 20px}
+  .top h1{margin:0;font-size:26px;font-weight:600}
+  button.pill{background:var(--panel);color:var(--dim);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  button.pill:hover{color:var(--fg)}
+  ul{margin:0;padding:0;list-style:none}
+  a{color:var(--link);text-decoration:none}
+  a:hover{text-decoration:underline;color:var(--link-h)}
+</style>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+<h1>Audi S3 8P Owner's guides</h1>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+<ul>
+  <li><a href="steering_comparison.html">ZF electric power steering maps compared</a></li>
+</ul>
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+})();
+</script>
+</body>
+</html>
