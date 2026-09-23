@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DSG service</title>
+<style>
+  :root, html[data-theme="light"]{
+    --bg:#f3f3ef; --panel:#fff; --panel2:#ecece8; --line:#d2d2ca;
+    --fg:#1c1c1c; --dim:#5c5c5c; --dimmer:#7a7a7a;
+    --code-fg:#333; --note-edge:#c8c8c0;
+    --info:#1565c0; --info-bg:#e8f1fb;
+    --mat-bg:#fff6e8; --mat-line:#c9842a;
+    --tool-bg:#e8f1fb; --tool-line:#1565c0;
+    --link:#1a6fb5; --link-h:#0d4f86;
+  }
+  html[data-theme="dark"]{
+    --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
+    --fg:#e8e8e8; --dim:#a8a8a8; --dimmer:#7d7d7d;
+    --code-fg:#dcdcdc; --note-edge:#5d5d5d;
+    --info:#64b5f6; --info-bg:#18304d;
+    --mat-bg:#3d3018; --mat-line:#e0a44a;
+    --tool-bg:#18304d; --tool-line:#64b5f6;
+    --link:#7aa9d8; --link-h:#9cc4e8;
+  }
+  html{color-scheme:light}
+  html[data-theme="dark"]{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 72px}
+  .back{margin:0 0 10px;font-size:13px}
+  .back a{color:var(--link);text-decoration:none}
+  .back a:hover{text-decoration:underline;color:var(--link-h)}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 6px}
+  .top h1{margin:0;flex:1}
+  h1{font-size:26px;font-weight:600;margin:0 0 6px}
+  h2{font-size:19px;font-weight:600;margin:44px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
+  p{margin:0 0 12px;color:var(--dim)}
+  p.lede{margin-bottom:8px}
+  code{font-family:Consolas,"SF Mono",monospace;font-size:.9em;
+       background:var(--panel2);padding:1px 5px;border-radius:3px;color:var(--code-fg)}
+  button.pill{background:var(--panel);color:var(--dim);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  button.pill:hover{background:var(--panel2);color:var(--fg)}
+  .cards{display:flex;flex-direction:column;gap:12px;margin:20px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);
+        border-radius:6px;padding:12px 14px}
+  .card.shopping{background:var(--mat-bg);border-color:var(--mat-line);border-left-width:4px}
+  .card.tools{background:var(--tool-bg);border-color:var(--tool-line);border-left-width:4px}
+  .card .nm{font-weight:600;font-size:15px}
+  .card ul{margin:10px 0 0;padding:0;list-style:none}
+  .card li{display:flex;justify-content:space-between;gap:16px;
+           padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+  .card li:first-child{border-top:0;padding-top:0}
+  .card .qty{color:var(--dim);white-space:nowrap}
+  .card.shopping label{display:flex;align-items:baseline;gap:10px;width:100%;cursor:pointer}
+  .card.shopping .item{flex:1}
+  .card.shopping input{accent-color:var(--mat-line);margin:0}
+  .card.shopping input:checked ~ .item,
+  .card.shopping input:checked ~ .qty{text-decoration:line-through;color:var(--dimmer)}
+  .card.shopping input:checked ~ .item code{text-decoration:line-through;color:var(--dimmer)}
+  .card.tools ul{list-style:disc;padding-left:1.25em}
+  .card.tools li{display:list-item;border-top:0;padding:3px 0}
+  ol.steps{margin:8px 0 0;padding:0;list-style:none;counter-reset:step}
+  ol.steps li{display:flex;gap:14px;align-items:flex-start;
+              background:var(--panel);border:1px solid var(--line);
+              border-radius:6px;padding:12px 14px;margin:0 0 8px}
+  ol.steps li::before{
+    counter-increment:step;content:counter(step);
+    flex:0 0 22px;height:22px;border-radius:50%;
+    background:var(--panel2);color:var(--fg);
+    font-size:12px;font-weight:600;line-height:22px;text-align:center}
+  ol.steps .t{font-weight:600;color:var(--fg)}
+  ol.steps .h{color:var(--dim);font-size:13px;margin-top:2px}
+</style>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<h1>DSG service</h1>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+<p class="lede">Oil and filter change for the DSG gearbox, filled to the overflow level at temperature.</p>
+
+<div class="cards">
+  <div class="card shopping">
+    <div class="nm">Shopping list</div>
+    <ul>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">DSG oil <code>G052182A2</code></span>
+          <span class="qty">6&nbsp;L</span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">DSG oil filter <code>02E305051C</code></span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">Filter o-ring <code>N91084501</code></span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">Gasket for fill bolt <code>N0438092</code></span>
+        </label>
+      </li>
+    </ul>
+  </div>
+  <div class="card tools">
+    <div class="nm">Tools needed</div>
+    <ul>
+      <li><span>VCDS</span></li>
+      <li><span>14&nbsp;mm Allen key</span></li>
+      <li><span>24&nbsp;mm hex socket</span></li>
+      <li><span>8&nbsp;mm Allen key</span></li>
+      <li><span>VAS 6262 or equivalent fill cap</span></li>
+      <li><span>Floor jack</span></li>
+      <li><span>Jack stands</span></li>
+      <li><span>Torque wrench</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Procedure</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Jack the car</div>
+      <div class="h">Support it on stands and make sure it is level.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Remove the intake and battery</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Replace the DSG filter with a new o-ring</div>
+      <div class="h">Torque to 20&nbsp;Nm.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Remove the DSG drain plug and drain the oil</div>
+      <div class="h">14&nbsp;mm Allen key.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Remove the overflow tube and drain the additional oil</div>
+      <div class="h">8&nbsp;mm Allen key, inserted into the drain hole.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Reinstall the overflow tube</div>
+      <div class="h">Torque to 3&nbsp;Nm.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Install the fill tool into the drain hole</div>
+      <div class="h">VAS 6262 or an equivalent aftermarket fill cap.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Fill oil</div>
+      <div class="h">Approximately 5.5&nbsp;litres.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Start the engine</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Watch ATF temperature in VCDS</div>
+      <div class="h">Select Control Module &gt; 02 &ndash; Auto Trans &gt; Measurement Blocks, then select or type Group 019. Watch the ATF (Auto Trans Fluid) Temperature field.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Cycle the selector while the temperature rises</div>
+      <div class="h">Sit in the driver&rsquo;s seat. Hold the brake pedal, shift into each selector position and hold for about 3 seconds, then return the lever to Park.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Disconnect the adapter when ATF is 35&ndash;45&nbsp;&deg;C</div>
+      <div class="h">Only then slide back under the car with the engine running and disconnect the adapter. Excess oil will drain. About &frac12; to &frac34; litre should come out.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Install the drain bolt with a new washer / gasket</div>
+      <div class="h">Torque to 45&nbsp;Nm.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Turn the engine off</div>
+    </div>
+  </li>
+</ol>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+})();
+</script>
+</body>
+</html>
