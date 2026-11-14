@@ -393,35 +393,56 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
     if(u==="bar"||u==="psi") unit=u;
   }catch(e){}
 
-  const storedPsi=new Map();
-
   function unitName(){ return unit==="bar"?"bar":"psi"; }
-  function fromPsi(psi){ return unit==="bar"?psi/PSI_PER_BAR:psi; }
-  function fmtNum(display){
-    if(unit==="bar") return (Math.round(display*10)/10).toFixed(1);
+  function isReading(v){ return typeof v==="number"&&Number.isFinite(v); }
+  function fromPsi(psi, inUnit){ return (inUnit||unit)==="bar"?psi/PSI_PER_BAR:psi; }
+  function formatFromPsi(psi, inUnit){
+    const display=fromPsi(psi, inUnit||unit);
+    if((inUnit||unit)==="bar") return (Math.round(display*10)/10).toFixed(1);
     const r=Math.round(display*10)/10;
     return Number.isInteger(r)?String(r):r.toFixed(1);
   }
-  function fmtVal(psi){ return fmtNum(fromPsi(psi))+" "+unitName(); }
-  function fmtRange(a,b){ return fmtNum(fromPsi(a))+"–"+fmtNum(fromPsi(b))+" "+unitName(); }
-
-  function parseReading(raw){
+  function fmtVal(psi){ return formatFromPsi(psi)+" "+unitName(); }
+  function fmtRange(a,b){ return formatFromPsi(a)+"–"+formatFromPsi(b)+" "+unitName(); }
+  function normalizeNumText(s){ return String(s).trim().replace(/\s/g,"").replace(",","."); }
+  function getDataPsi(el){
+    if(!el.hasAttribute("data-psi")) return null;
+    const n=Number(el.getAttribute("data-psi"));
+    return Number.isFinite(n)?n:null;
+  }
+  function setDataPsi(el, psi){
+    if(Number.isFinite(psi)) el.setAttribute("data-psi", String(psi));
+    else el.removeAttribute("data-psi");
+  }
+  function displayMatches(raw, psi, inUnit){
+    if(!Number.isFinite(psi)) return false;
+    return normalizeNumText(raw)===normalizeNumText(formatFromPsi(psi, inUnit));
+  }
+  function parseReading(raw, inUnit){
+    const use=inUnit||unit;
     const t=String(raw).trim().replace(/\s/g,"");
     if(t==="") return null;
     if(!/^\d+([.,]\d+)?$/.test(t)) return NaN;
     const n=Number(t.replace(",","."));
-    const max=unit==="bar"?27.6:400;
+    const max=use==="bar"?27.6:400;
     if(!Number.isFinite(n)||n>max) return NaN;
-    return unit==="bar"?n*PSI_PER_BAR:n;
+    return use==="bar"?n*PSI_PER_BAR:n;
+  }
+  function readingFromField(el, inUnit){
+    const use=inUnit||unit;
+    const raw=String(el.value).trim();
+    if(raw==="") return {kind:"empty"};
+    const stored=getDataPsi(el);
+    if(displayMatches(raw, stored, use)) return {kind:"ok", psi:stored};
+    const parsed=parseReading(el.value, use);
+    if(Number.isFinite(parsed)) return {kind:"ok", psi:parsed};
+    return {kind:"invalid"};
   }
   function valueOf(el){
-    const raw=String(el.value).trim();
-    if(raw===""){ storedPsi.set(el,null); return null; }
-    const stored=storedPsi.get(el);
-    if(typeof stored==="number" && raw===fmtNum(fromPsi(stored))) return stored;
-    const parsed=parseReading(el.value);
-    if(typeof parsed==="number") storedPsi.set(el,parsed);
-    return parsed;
+    const reading=readingFromField(el, unit);
+    if(reading.kind==="empty"){ setDataPsi(el, null); return null; }
+    if(reading.kind==="ok"){ setDataPsi(el, reading.psi); return reading.psi; }
+    return NaN;
   }
   function listCyls(indexes){
     const n=indexes.map(i=>i+1);
@@ -469,20 +490,21 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
 
   function assess(){
     const dry=dryInputs.map(el=>valueOf(el));
+    const wetRaw=wetInputs.map(el=>valueOf(el));
     const known=[];
-    dry.forEach((v,i)=>{ if(typeof v==="number") known.push(i); });
+    dry.forEach((v,i)=>{ if(isReading(v)) known.push(i); });
     const max=known.length?Math.max(...known.map(i=>dry[i])):0;
-    const outlierWarn=i=>known.length>=2&&typeof dry[i]==="number"&&max>0&&(max-dry[i])/max>LIM.pct;
-    const outlierBad=i=>known.length>=2&&typeof dry[i]==="number"&&(max-dry[i])>LIM.maxDiff;
-    const low=i=>typeof dry[i]==="number"&&(dry[i]<LIM.healthy||outlierWarn(i));
-    const wet=wetInputs.map((el,i)=>low(i)?valueOf(el):null);
+    const outlierWarn=i=>known.length>=2&&isReading(dry[i])&&max>0&&(max-dry[i])/max>LIM.pct;
+    const outlierBad=i=>known.length>=2&&isReading(dry[i])&&(max-dry[i])>LIM.maxDiff;
+    const low=i=>isReading(dry[i])&&(dry[i]<LIM.healthy||outlierWarn(i));
+    const wet=wetRaw.map((v,i)=>low(i)?v:null);
     const wetBox=document.querySelector(".wet-results");
     if(wetBox) wetBox.classList.toggle("show", known.some(low));
 
     dryInputs.forEach((el,i)=>{
       const v=dry[i];
       el.setAttribute("aria-invalid", Number.isNaN(v)?"true":"false");
-      if(typeof v!=="number") paint(el, null);
+      if(!isReading(v)) paint(el, null);
       else if(v<LIM.wear||outlierBad(i)) paint(el, "bad");
       else if(v<LIM.healthy||outlierWarn(i)) paint(el, "warn");
       else paint(el, null);
@@ -495,7 +517,7 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
         return;
       }
       el.setAttribute("aria-invalid", Number.isNaN(w)?"true":"false");
-      if(typeof w!=="number"||typeof dry[i]!=="number"){ paint(el, null); return; }
+      if(!isReading(w)||!isReading(dry[i])){ paint(el, null); return; }
       const kind=wetKind(dry[i], w);
       if(w<LIM.wear||kind==="barely"||kind==="lower") paint(el, "bad");
       else if(kind==="middle"||w<LIM.healthy) paint(el, "warn");
@@ -513,7 +535,7 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
     const gasketNote=" Check for coolant loss or bubbles in the expansion tank to confirm the gasket.";
 
     function wetLines(indexes){
-      return indexes.filter(i=>typeof wet[i]==="number"&&low(i)).map(i=>wetSentence(i, dry[i], wet[i]));
+      return indexes.filter(i=>isReading(wet[i])&&low(i)).map(i=>wetSentence(i, dry[i], wet[i]));
     }
 
     if(nears.length&&!allLowEven){
@@ -531,7 +553,7 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
       wetLines(lows).forEach(s=>paras.push(s));
     } else if(known.length===4&&lows.length===2){
       const a=lows[0], b=lows[1];
-      const wa=typeof wet[a]==="number", wb=typeof wet[b]==="number";
+      const wa=isReading(wet[a]), wb=isReading(wet[b]);
       if(Math.abs(a-b)===1){
         const ka=wa?wetKind(dry[a], wet[a]):"", kb=wb?wetKind(dry[b], wet[b]):"";
         if(wa&&wb&&ka==="rings"&&kb==="rings"){
@@ -543,22 +565,22 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
         } else {
           paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both low. The head gasket between them is the first suspect until the wet tests agree."+gasketNote);
           wetLines(lows).forEach(s=>paras.push(s));
-          lows.forEach(i=>{ if(typeof wet[i]!=="number"&&dry[i]>=LIM.near) paras.push("Do a wet test on cylinder "+(i+1)+"."); });
+          lows.forEach(i=>{ if(!isReading(wet[i])&&dry[i]>=LIM.near) paras.push("Do a wet test on cylinder "+(i+1)+"."); });
         }
       } else {
         paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are both low. They are not neighbours, so these are two separate faults. They do not share a gasket face.");
-        const missing=lows.filter(i=>typeof wet[i]!=="number"&&dry[i]>=LIM.near);
+        const missing=lows.filter(i=>!isReading(wet[i])&&dry[i]>=LIM.near);
         if(missing.length===2) paras.push("Do a wet test on each.");
         else if(missing.length===1) paras.push("Do a wet test on cylinder "+(missing[0]+1)+".");
         wetLines(lows).forEach(s=>paras.push(s));
       }
     } else if(known.length===4&&lows.length===1){
       const i=lows[0];
-      if(dry[i]>=LIM.near) paras.push(oneLow(i, dry[i], max, outlierWarn(i), typeof wet[i]==="number"));
-      if(typeof wet[i]==="number") paras.push(wetSentence(i, dry[i], wet[i]));
+      if(dry[i]>=LIM.near) paras.push(oneLow(i, dry[i], max, outlierWarn(i), isReading(wet[i])));
+      if(isReading(wet[i])) paras.push(wetSentence(i, dry[i], wet[i]));
     } else if(known.length===4&&lows.length===3){
       paras.push(listCyls(lows)+" are low, so this is not a single gasket between one pair. A leak-down test is the next step.");
-      const missing=lows.filter(i=>typeof wet[i]!=="number"&&dry[i]>=LIM.near);
+      const missing=lows.filter(i=>!isReading(wet[i])&&dry[i]>=LIM.near);
       if(missing.length) paras.push("A wet test on "+listCyls(missing).replace(/^Cylinders /,"cylinders ").replace(/^Cylinder /,"cylinder ")+" can separate ring sealing from the valves.");
       wetLines(lows).forEach(s=>paras.push(s));
     } else if(known.length===4&&lows.length===4){
@@ -568,8 +590,8 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
     } else if(lows.length&&known.length<4){
       lows.forEach(i=>{
         if(dry[i]<LIM.near) return;
-        paras.push(oneLow(i, dry[i], max, outlierWarn(i), typeof wet[i]==="number"));
-        if(typeof wet[i]==="number") paras.push(wetSentence(i, dry[i], wet[i]));
+        paras.push(oneLow(i, dry[i], max, outlierWarn(i), isReading(wet[i])));
+        if(isReading(wet[i])) paras.push(wetSentence(i, dry[i], wet[i]));
       });
     } else if(known.length===4&&!lows.length&&!highs.length){
       const above=known.filter(i=>dry[i]>LIM.healthyTop);
@@ -598,22 +620,20 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
   }
 
   unitBtn.addEventListener("click", ()=>{
-    const next=unit==="psi"?"bar":"psi";
-    const snapshot=dryInputs.concat(wetInputs).map(el=>{
-      const raw=String(el.value).trim();
-      if(raw==="") return {el, keep:false};
-      const stored=storedPsi.get(el);
-      if(typeof stored==="number" && raw===fmtNum(fromPsi(stored))) return {el, v:stored, keep:true};
-      const parsed=parseReading(el.value);
-      if(typeof parsed==="number") return {el, v:parsed, keep:true};
-      return {el, keep:false};
+    const oldUnit=unit;
+    const next=oldUnit==="psi"?"bar":"psi";
+    const updates=dryInputs.concat(wetInputs).map(el=>{
+      const reading=readingFromField(el, oldUnit);
+      return {el, ...reading};
     });
     unit=next;
     try{ localStorage.setItem("zf-unit", unit); }catch(e){}
-    snapshot.forEach(s=>{
-      if(s.keep && typeof s.v==="number"){
-        storedPsi.set(s.el, s.v);
-        s.el.value=fmtNum(fromPsi(s.v));
+    updates.forEach(u=>{
+      if(u.kind==="empty"){
+        setDataPsi(u.el, null);
+      } else if(u.kind==="ok" && Number.isFinite(u.psi)){
+        setDataPsi(u.el, u.psi);
+        u.el.value=formatFromPsi(u.psi, unit);
       }
     });
     syncUnitUI();
