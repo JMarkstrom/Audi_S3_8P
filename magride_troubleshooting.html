@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Magnetic Ride (Magride) troubleshooting</title>
+<link rel="stylesheet" href="assets/guide.css">
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<div class="title">
+<p class="sheet">Audi S3 8P</p>
+<h1>Magnetic Ride (Magride) troubleshooting</h1>
+</div>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+</div>
+<p class="lede">Checks for the magnetic-ride dampers, from a road test through VCDS current readings.</p>
+
+<div class="cards">
+  <div class="card tools">
+    <div class="nm">Tools needed</div>
+    <ul>
+      <li><span>VCDS</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Quick test without logging</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Drive the car</div>
+      <div class="h">Preferably on a bumpy or twisty road.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Press the damping button</div>
+      <div class="h">The button is between the seats. LED off is Comfort (standard). LED on is Sport.</div>
+    </div>
+  </li>
+</ol>
+<p><b>Results:</b> The car should firm up noticeably within a moment of engaging Sport mode.</p>
+<div class="note alert">
+  <p><b>Note:</b> According to SSP381 and Audi TPI 2045048/7, the damper coils are not energised when the vehicle is stationary, so the dampers are very soft. Judge Comfort vs Sport while driving, not on the driveway.</p>
+</div>
+
+<h2>Shock absorber test mode (test bench)</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Turn on the ignition</div>
+      <div class="h">The engine does not need to run.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Press and hold the damping button</div>
+      <div class="h">Hold it for more than 5&nbsp;seconds. The LED flashes when test mode is active.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Push down on each corner</div>
+      <div class="h">Assess the damping response. Compare each corner with test mode on vs off.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Exit test mode</div>
+      <div class="h">Press the button again, switch off the ignition, or drive above 10&nbsp;km/h.</div>
+    </div>
+  </li>
+</ol>
+<p><b>Results:</b> Each corner should rebound noticeably slower and firmer with test mode on than with it off.</p>
+
+<h2>Output Tests (best electrical check)</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Connect VCDS</div>
+      <div class="h">Use the car's OBD-II port.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Turn on the ignition</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Open the suspension module</div>
+      <div class="h">In VCDS, select Control Module → 14 – Susp. Elect.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Run an output test</div>
+      <div class="h">Select Output Tests / Final Control Diagnosis and activate one damper at a time.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Push down on the activated corner</div>
+      <div class="h">It should firm up.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">End the test</div>
+      <div class="h">Activation ends via VCDS or by cycling the ignition.</div>
+    </div>
+  </li>
+</ol>
+<p><b>Results:</b> Successful activation shows approx. 2,000&nbsp;mA for the activated damper (SSP381: 2&nbsp;A).</p>
+
+<h2>Reading mode and current in VCDS</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Connect VCDS</div>
+      <div class="h">Use the car's OBD-II port.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Start the engine</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Open the suspension module</div>
+      <div class="h">In VCDS, select Control Module → 14 – Susp. Elect.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Open Measuring Blocks – 08</div>
+      <div class="h">028 shows calculated damper and control unit temperatures. Then browse 001–030 and look for fields showing system status, button position (E387), Sport/Comfort, or coil current for N336–N339.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Open Adv. Meas. Values</div>
+      <div class="h">Select anything resembling system status, damping mode, or button E387; current for FL, FR, RL, and RR (N336–N339); and ride height or level senders.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Log while driving</div>
+      <div class="h">Toggle Sport on and off and drive a short twisty section. Save the CSV.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Compare the four currents</div>
+      <div class="h">Compare all four currents in Comfort vs Sport.</div>
+    </div>
+  </li>
+</ol>
+<p><b>Results:</b></p>
+<ul class="points">
+  <li>All four currents should rise in Sport compared with Comfort.</li>
+  <li>Current varies constantly with road and load, since J250 calculates it individually for each damper.</li>
+  <li>A corner stuck near 0&nbsp;A, or one that does not follow the mode change, indicates a faulty damper or wiring, sometimes without a fault code.</li>
+</ul>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+})();
+</script>
+</body>
+</html>
