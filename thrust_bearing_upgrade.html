@@ -9,6 +9,7 @@
     --bg:#f3f3ef; --panel:#fff; --panel2:#ecece8; --line:#d2d2ca;
     --fg:#1c1c1c; --dim:#5c5c5c; --dimmer:#7a7a7a;
     --code-fg:#333; --note-edge:#c8c8c0;
+    --info:#1565c0; --info-bg:#e8f1fb;
     --mat-bg:#fff6e8; --mat-line:#c9842a;
     --tool-bg:#e8f1fb; --tool-line:#1565c0;
     --link:#1a6fb5; --link-h:#0d4f86;
@@ -17,6 +18,7 @@
     --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
     --fg:#e8e8e8; --dim:#a8a8a8; --dimmer:#7d7d7d;
     --code-fg:#dcdcdc; --note-edge:#5d5d5d;
+    --info:#64b5f6; --info-bg:#18304d;
     --mat-bg:#3d3018; --mat-line:#e0a44a;
     --tool-bg:#18304d; --tool-line:#64b5f6;
     --link:#7aa9d8; --link-h:#9cc4e8;
@@ -87,6 +89,10 @@
         padding:12px 16px;margin:18px 0}
   .note p{margin:0;color:var(--dim)}
   .note b{color:var(--fg)}
+  .note.alert{background:var(--info-bg);border:1px solid var(--info);border-left-width:5px;
+        padding:14px 16px}
+  .note.alert p{color:var(--fg)}
+  .note.alert b{color:var(--info)}
   figure.drawing{margin:8px 0 4px;max-width:760px}
   figure.drawing img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
   .actions{display:flex;gap:8px;flex:0 0 auto}
@@ -97,6 +103,7 @@
       --bg:#fff; --fg:#000; --dim:#1a1a1a; --dimmer:#1a1a1a;
       --panel:#fff; --panel2:#fff; --line:#000;
       --code-fg:#000; --note-edge:#000;
+      --info:#000; --info-bg:transparent;
       --mat-bg:transparent; --mat-line:#000;
       --tool-bg:transparent; --tool-line:#000;
       --link:#000; --link-h:#000;
@@ -105,7 +112,7 @@
     .wrap{max-width:none;padding:0}
     .back, #themeBtn, #printBtn{display:none !important}
     a, p, h1, h2, code, .card .nm, .card .qty, ol.steps .t, ol.steps .h, .note p, .note b{color:#000}
-    code, .card, .card.shopping, .card.tools, ol.steps li, .note{
+    code, .card, .card.shopping, .card.tools, ol.steps li, .note, .note.alert{
       background:transparent !important;border-color:#000;box-shadow:none}
     ol.steps li::before{background:transparent !important;color:#000;border:1px solid #000}
     h2{margin:16px 0 8px;padding-top:10px;break-after:avoid;page-break-after:avoid}
@@ -166,7 +173,7 @@
 <figure class="drawing">
   <img src="images/06F-main-cap-modification.png" alt="06F centre main cap modification, with the thrust groove on the tang side">
 </figure>
-<div class="note">
+<div class="note alert">
   <p><b>Note:</b> This modification needs the engine to come apart. It's most worth doing during a bottom-end rebuild or when building a tuned manual car with an uprated clutch. On DSG cars (DQ250 wet clutch), there is no pedal-driven thrust load, so the benefit is smaller.</p>
 </div>
 
