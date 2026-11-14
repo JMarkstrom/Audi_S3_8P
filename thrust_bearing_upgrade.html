@@ -87,11 +87,8 @@
         padding:12px 16px;margin:18px 0}
   .note p{margin:0;color:var(--dim)}
   .note b{color:var(--fg)}
-  .video{margin:8px 0 4px;max-width:760px}
-  .video .frame{position:relative;padding-top:56.25%;background:var(--panel);
-    border:1px solid var(--line);border-radius:6px;overflow:hidden}
-  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-  .video figcaption{margin-top:8px;color:var(--dim);font-size:13px}
+  figure.drawing{margin:8px 0 4px;max-width:760px}
+  figure.drawing img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
   .actions{display:flex;gap:8px;flex:0 0 auto}
   @media print{
     @page{margin:16mm}
@@ -114,8 +111,8 @@
     h2{margin:16px 0 8px;padding-top:10px;break-after:avoid;page-break-after:avoid}
     .card, ol.steps li, .note{break-inside:avoid;page-break-inside:avoid}
     .card.shopping button.copy{background:transparent !important;border:0;padding:0;color:#000}
-    .video .frame{display:none}
-    .video figcaption{color:#000}
+    figure.drawing{break-inside:avoid;page-break-inside:avoid}
+    figure.drawing img{border-color:#000}
   }
 </style>
 <script>
@@ -166,16 +163,12 @@
 <h2>Introduction</h2>
 <p>The EA113 2.0 TFSI (06F block) controls crankshaft end play with a single pair of thrust washers. They sit in the centre (3rd) main bearing, one on each side of the block half. The main cap itself carries no thrust washers. The earlier 058-block 1.8T used four washers, two in the block and two in the cap, so the full 360° around the crank journal took thrust load. On the EA113, every time the clutch pedal is pressed, the release force pushes the crankshaft toward the timing-belt end of the engine. That load goes through just one of the two washers and over time, in some configurations, can lead to failures.</p>
 <p>As a preventative solution you may consider machining the centre main cap so it takes an extra thrust washer and shares the load.</p>
+<figure class="drawing">
+  <img src="images/06F-main-cap-modification.png" alt="06F centre main cap modification, with the thrust groove on the tang side">
+</figure>
 <div class="note">
   <p><b>Note:</b> This modification needs the engine to come apart. It's most worth doing during a bottom-end rebuild or when building a tuned manual car with an uprated clutch. On DSG cars (DQ250 wet clutch), there is no pedal-driven thrust load, so the benefit is smaller.</p>
 </div>
-
-<figure class="video">
-  <div class="frame">
-    <iframe src="https://www.youtube.com/embed/bSOn72P8rCM" title="360° Thrust Bearing Modification on the 2.0T EA113 (06F) Part I" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
-  </div>
-  <figcaption><a href="https://youtu.be/bSOn72P8rCM">360° Thrust Bearing Modification on the 2.0T EA113 (06F) Part I</a></figcaption>
-</figure>
 
 <h2>Main cap modification</h2>
 <p>The 3rd main cap is removed and machined.</p>
