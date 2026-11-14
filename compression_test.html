@@ -4,144 +4,46 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Compression test</title>
+<link rel="stylesheet" href="assets/guide.css">
 <style>
-  :root, html[data-theme="light"]{
-    --bg:#f3f3ef; --panel:#fff; --panel2:#ecece8; --line:#d2d2ca;
-    --fg:#1c1c1c; --dim:#5c5c5c; --dimmer:#7a7a7a;
-    --code-fg:#333; --note-edge:#c8c8c0;
-    --info:#1565c0; --info-bg:#e8f1fb;
-    --mat-bg:#fff6e8; --mat-line:#c9842a;
-    --tool-bg:#e8f1fb; --tool-line:#1565c0;
-    --link:#1a6fb5; --link-h:#0d4f86;
-    --bad:#9f1d1d; --warn:#8a5a00;
+:root, html[data-theme="light"]{
+  --bad:#9f1d1d; --warn:#8a5a00;
+}
+html[data-theme="dark"]{
+  --bad:#ffb4b4; --warn:#f0c36a;
+}
+.tblwrap{overflow-x:auto;max-width:720px}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{text-align:left;padding:8px 10px;border:1px solid var(--line);vertical-align:middle;
+      font-variant-numeric:tabular-nums}
+th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+th.cyl{text-transform:none;letter-spacing:0;font-weight:700;color:var(--fg);font-size:13px}
+td.psi{min-width:4.5em}
+td.psi input{width:100%;min-width:3.2em;border:0;background:transparent;color:inherit;
+  font:inherit;padding:2px 0;border-radius:2px;font-variant-numeric:tabular-nums}
+td.psi input:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+td.psi input[aria-invalid="true"]{box-shadow:inset 0 -1px 0 var(--bad)}
+td.bad input{color:var(--bad);font-weight:600}
+td.warn input{color:var(--warn);font-weight:600}
+.verdict:empty{display:none}
+.verdict p + p{margin-top:8px}
+.print-only{display:none}
+.wet-results{display:none}
+.wet-results.show{display:block}
+.results-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:28px}
+.results-head h2{margin:0}
+@media print{
+  :root, html[data-theme="light"], html[data-theme="dark"]{
+    --bad:#000; --warn:#000;
   }
-  html[data-theme="dark"]{
-    --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
-    --fg:#e8e8e8; --dim:#a8a8a8; --dimmer:#7d7d7d;
-    --code-fg:#dcdcdc; --note-edge:#5d5d5d;
-    --info:#64b5f6; --info-bg:#18304d;
-    --mat-bg:#3d3018; --mat-line:#e0a44a;
-    --tool-bg:#18304d; --tool-line:#64b5f6;
-    --link:#7aa9d8; --link-h:#9cc4e8;
-    --bad:#ffb4b4; --warn:#f0c36a;
-  }
-  html{color-scheme:light}
-  html[data-theme="dark"]{color-scheme:dark}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--fg);
-       font:14px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
-  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 72px}
-  .back{margin:0 0 10px;font-size:13px}
-  .back a{color:var(--link);text-decoration:none}
-  .back a:hover{text-decoration:underline;color:var(--link-h)}
-  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 6px}
-  .top h1{margin:0;flex:1}
-  h1{font-size:26px;font-weight:600;margin:0 0 6px}
-  h2{font-size:19px;font-weight:600;margin:44px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
-  h3{font-size:15px;font-weight:600;margin:24px 0 6px}
-  p{margin:0 0 12px;color:var(--dim)}
-  p.lede{margin-bottom:8px}
-  p b, ul.points b, .h b{color:var(--fg)}
-  button.pill{background:var(--panel);color:var(--dim);border:1px solid var(--line);
-    border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
-  button.pill:hover{background:var(--panel2);color:var(--fg)}
-  ul.points{margin:0 0 12px;padding-left:1.25em;color:var(--dim)}
-  ul.points li{margin:0 0 8px}
-  .cards{display:flex;flex-direction:column;gap:12px;margin:20px 0 8px}
-  .card{background:var(--panel);border:1px solid var(--line);
-        border-radius:6px;padding:12px 14px}
-  .card.shopping{background:var(--mat-bg);border-color:var(--mat-line);border-left-width:4px}
-  .card.tools{background:var(--tool-bg);border-color:var(--tool-line);border-left-width:4px}
-  .card .nm{font-weight:600;font-size:15px}
-  .card ul{margin:10px 0 0;padding:0;list-style:none}
-  .card li{display:flex;justify-content:space-between;gap:16px;
-           padding:6px 0;border-top:1px solid var(--line);font-size:13px}
-  .card li:first-child{border-top:0;padding-top:0}
-  .card .qty{color:var(--dim);white-space:nowrap}
-  .card.shopping label{display:flex;align-items:baseline;gap:10px;width:100%;cursor:pointer}
-  .card.shopping .item{flex:1}
-  .card.shopping input{accent-color:var(--mat-line);margin:0}
-  .card.shopping input:checked ~ .item,
-  .card.shopping input:checked ~ .qty,
-  .card.shopping input:checked ~ .item button.copy{text-decoration:line-through;color:var(--dimmer)}
-  .card.shopping button.copy{
-    font-family:Consolas,"SF Mono",monospace;font-size:.9em;line-height:inherit;
-    background:var(--panel2);border:0;border-radius:3px;padding:1px 5px;
-    color:var(--code-fg);cursor:pointer;vertical-align:baseline}
-  .card.shopping button.copy:hover{background:var(--line)}
-  .card.shopping button.copy:focus-visible{outline:2px solid var(--line);outline-offset:1px}
-  .card.shopping button.copy.copied{color:var(--fg);text-decoration:none}
-  .card.tools ul{list-style:disc;padding-left:1.25em}
-  .card.tools li{display:list-item;border-top:0;padding:3px 0}
-  ol.steps{margin:8px 0 0;padding:0;list-style:none;counter-reset:step}
-  ol.steps li{display:flex;gap:14px;align-items:flex-start;
-              background:var(--panel);border:1px solid var(--line);
-              border-radius:6px;padding:12px 14px;margin:0 0 8px}
-  ol.steps li::before{
-    counter-increment:step;content:counter(step);
-    flex:0 0 22px;height:22px;border-radius:50%;
-    background:var(--panel2);color:var(--fg);
-    font-size:12px;font-weight:600;line-height:22px;text-align:center}
-  ol.steps .t{font-weight:600;color:var(--fg)}
-  ol.steps .h{color:var(--dim);font-size:13px;margin-top:2px}
-  .tblwrap{overflow-x:auto;max-width:720px}
-  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
-  th,td{text-align:left;padding:8px 10px;border:1px solid var(--line);vertical-align:middle}
-  th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
-  th.cyl{text-transform:none;letter-spacing:0;font-weight:700;color:var(--fg);font-size:13px}
-  td.psi{min-width:4.5em}
-  td.psi input{width:100%;min-width:3.2em;border:0;background:transparent;color:inherit;
-    font:inherit;padding:2px 0;border-radius:2px}
-  td.psi input:focus-visible{outline:2px solid var(--line);outline-offset:1px}
-  td.psi input[aria-invalid="true"]{box-shadow:inset 0 -1px 0 var(--bad)}
-  td.bad input{color:var(--bad);font-weight:600}
-  td.warn input{color:var(--warn);font-weight:600}
-  .verdict:empty{display:none}
-  .verdict p + p{margin-top:8px}
-  .print-only{display:none}
-  .wet-results{display:none}
-  .wet-results.show{display:block}
-  .note{background:var(--panel);border-left:3px solid var(--note-edge);border-radius:0 5px 5px 0;
-        padding:12px 16px;margin:18px 0}
-  .note p{margin:0;color:var(--dim)}
-  .note b{color:var(--fg)}
-  .note.alert{background:var(--info-bg);border:1px solid var(--info);border-left-width:5px;
-        padding:14px 16px}
-  .note.alert p{color:var(--fg)}
-  .note.alert b{color:var(--info)}
-  .actions{display:flex;gap:8px;flex:0 0 auto}
-  .results-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
-    margin:44px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
-  .results-head h2{margin:0;padding:0;border:0;flex:1}
-  @media print{
-    @page{margin:16mm}
-    :root, html[data-theme="light"], html[data-theme="dark"]{
-      color-scheme:light;
-      --bg:#fff; --fg:#000; --dim:#1a1a1a; --dimmer:#1a1a1a;
-      --panel:#fff; --panel2:#fff; --line:#000;
-      --code-fg:#000; --note-edge:#000;
-      --info:#000; --info-bg:transparent;
-      --mat-bg:transparent; --mat-line:#000;
-      --tool-bg:transparent; --tool-line:#000;
-      --link:#000; --link-h:#000;
-      --bad:#000; --warn:#000;
-    }
-    body{background:#fff !important;color:#000}
-    .wrap{max-width:none;padding:0}
-    .back, #themeBtn, #printBtn, #unitBtn{display:none !important}
-    .print-only{display:block !important}
-    .wet-results{display:block !important}
-    a, p, h1, h2, h3, th, .card .nm, .card .qty, ol.steps .t, ol.steps .h, .note p, .note b,
-    ul.points, ul.points b{color:#000}
-    .card, .card.shopping, .card.tools, ol.steps li, .note, .note.alert{
-      background:transparent !important;border-color:#000;box-shadow:none}
-    .card.shopping button.copy{background:transparent !important;border:0;padding:0;color:#000}
-    ol.steps li::before{background:transparent !important;color:#000;border:1px solid #000}
-    h2, h3{break-after:avoid;page-break-after:avoid}
-    h2{margin:16px 0 8px;padding-top:10px}
-    .card, ol.steps li, .note, tr{break-inside:avoid;page-break-inside:avoid}
-    td.psi input, td.bad input, td.warn input{color:#000 !important;font-weight:400;box-shadow:none}
-  }
+  .results-head{margin-top:16px}
+  #unitBtn{display:none !important}
+  .print-only{display:block !important}
+  .wet-results{display:block !important}
+  tr{break-inside:avoid;page-break-inside:avoid}
+  th, td{color:#000;border-color:#000}
+  td.psi input, td.bad input, td.warn input{color:#000 !important;font-weight:400;box-shadow:none}
+}
 </style>
 <script>
 (function(){
@@ -157,7 +59,10 @@
 
 <p class="back"><a href="index.html">Back</a></p>
 <div class="top">
+<div class="title">
+<p class="sheet">Audi S3 8P</p>
 <h1>Compression test</h1>
+</div>
 <div class="actions">
 <button type="button" class="pill" id="printBtn">Print</button>
 <button type="button" class="pill" id="themeBtn">Dark view</button>
