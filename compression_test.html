@@ -13,6 +13,7 @@
     --mat-bg:#fff6e8; --mat-line:#c9842a;
     --tool-bg:#e8f1fb; --tool-line:#1565c0;
     --link:#1a6fb5; --link-h:#0d4f86;
+    --bad:#9f1d1d; --warn:#8a5a00;
   }
   html[data-theme="dark"]{
     --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
@@ -22,6 +23,7 @@
     --mat-bg:#3d3018; --mat-line:#e0a44a;
     --tool-bg:#18304d; --tool-line:#64b5f6;
     --link:#7aa9d8; --link-h:#9cc4e8;
+    --bad:#ffb4b4; --warn:#f0c36a;
   }
   html{color-scheme:light}
   html[data-theme="dark"]{color-scheme:dark}
@@ -86,8 +88,19 @@
   table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
   th,td{text-align:left;padding:8px 10px;border:1px solid var(--line);vertical-align:middle}
   th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
-  td.row{font-weight:600;color:var(--fg);white-space:nowrap}
-  td.blank{height:2.6em}
+  th.cyl{text-transform:none;letter-spacing:0;font-weight:700;color:var(--fg);font-size:13px}
+  td.psi{min-width:4.5em}
+  td.psi input{width:100%;min-width:3.2em;border:0;background:transparent;color:inherit;
+    font:inherit;padding:2px 0;border-radius:2px}
+  td.psi input:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+  td.psi input[aria-invalid="true"]{box-shadow:inset 0 -1px 0 var(--bad)}
+  td.bad input{color:var(--bad);font-weight:600}
+  td.warn input{color:var(--warn);font-weight:600}
+  .verdict:empty{display:none}
+  .verdict p + p{margin-top:8px}
+  .print-only{display:none}
+  .wet-results{display:none}
+  .wet-results.show{display:block}
   .note{background:var(--panel);border-left:3px solid var(--note-edge);border-radius:0 5px 5px 0;
         padding:12px 16px;margin:18px 0}
   .note p{margin:0;color:var(--dim)}
@@ -108,10 +121,13 @@
       --mat-bg:transparent; --mat-line:#000;
       --tool-bg:transparent; --tool-line:#000;
       --link:#000; --link-h:#000;
+      --bad:#000; --warn:#000;
     }
     body{background:#fff !important;color:#000}
     .wrap{max-width:none;padding:0}
     .back, #themeBtn, #printBtn{display:none !important}
+    .print-only{display:block !important}
+    .wet-results{display:block !important}
     a, p, h1, h2, h3, th, .card .nm, .card .qty, ol.steps .t, ol.steps .h, .note p, .note b,
     ul.points, ul.points b{color:#000}
     .card, .card.shopping, .card.tools, ol.steps li, .note, .note.alert{
@@ -121,7 +137,7 @@
     h2, h3{break-after:avoid;page-break-after:avoid}
     h2{margin:16px 0 8px;padding-top:10px}
     .card, ol.steps li, .note, tr{break-inside:avoid;page-break-inside:avoid}
-    td.blank{height:2.6em}
+    td.psi input, td.bad input, td.warn input{color:#000 !important;font-weight:400;box-shadow:none}
   }
 </style>
 <script>
@@ -179,13 +195,6 @@
   </div>
 </div>
 
-<h2>Preparation</h2>
-<ul class="points">
-  <li>The battery must be fully charged. Low cranking speed gives falsely low readings.</li>
-  <li>Test with the engine warm. Cold readings run lower.</li>
-  <li>Write down the gauge reading for every cylinder <b>before</b> moving on.</li>
-</ul>
-
 <h2>Procedure</h2>
 <ol class="steps">
   <li>
@@ -197,7 +206,7 @@
   <li>
     <div>
       <div class="t">Disable fuel delivery</div>
-      <div class="h">Remove the fuel pump fuse or relay (check the fuse diagram for your car), or unplug the fuel pump control module. Start the engine and let it run until it stalls, so the low-pressure side is depressurised. <b>High-pressure fuel lines must never be opened.</b></div>
+      <div class="h">Remove the fuel pump fuse or relay (check the fuse diagram for your car), or unplug the fuel pump control module. Start the engine and let it run until it stalls, so the low-pressure side is depressurised.</div>
     </div>
   </li>
   <li>
@@ -255,37 +264,53 @@
 <table>
   <thead>
     <tr>
-      <th></th>
-      <th>Cyl 1</th>
-      <th>Cyl 2</th>
-      <th>Cyl 3</th>
-      <th>Cyl 4</th>
+      <th class="cyl">Cylinder 1</th>
+      <th class="cyl">Cylinder 2</th>
+      <th class="cyl">Cylinder 3</th>
+      <th class="cyl">Cylinder 4</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td class="row">Dry (bar / psi)</td>
-      <td class="blank"></td>
-      <td class="blank"></td>
-      <td class="blank"></td>
-      <td class="blank"></td>
-    </tr>
-    <tr>
-      <td class="row">Wet (bar / psi)</td>
-      <td class="blank"></td>
-      <td class="blank"></td>
-      <td class="blank"></td>
-      <td class="blank"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 1 dry, psi" data-kind="dry"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 2 dry, psi" data-kind="dry"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 3 dry, psi" data-kind="dry"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 4 dry, psi" data-kind="dry"></td>
     </tr>
   </tbody>
 </table>
 </div>
+<div class="wet-results">
+<h2>Results (wet)</h2>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th class="cyl">Cylinder 1</th>
+      <th class="cyl">Cylinder 2</th>
+      <th class="cyl">Cylinder 3</th>
+      <th class="cyl">Cylinder 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 1 wet, psi" data-kind="wet"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 2 wet, psi" data-kind="wet"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 3 wet, psi" data-kind="wet"></td>
+      <td class="psi"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Cylinder 4 wet, psi" data-kind="wet"></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="note verdict" id="verdict" aria-live="polite"></div>
 
+<div class="print-only">
 <h2>Interpreting the results</h2>
 <ul class="points">
-  <li><b>Healthy engine (warm):</b> about 11.5–14&nbsp;bar (roughly 170–200&nbsp;psi).</li>
-  <li><b>Wear limit:</b> about 7&nbsp;bar (about 100&nbsp;psi). Readings below that indicate a serious problem.</li>
-  <li><b>Variation between cylinders:</b> max about 3&nbsp;bar, or about 10% from the average.</li>
+  <li><b>Healthy engine (warm):</b> about 170–200&nbsp;psi.</li>
+  <li><b>Wear limit:</b> about 100&nbsp;psi. Readings below that indicate a serious problem.</li>
+  <li><b>Variation between cylinders:</b> max about 45&nbsp;psi, or about 10% from the average.</li>
 </ul>
 <div class="note">
   <p>Verify these limits against ElsaWin or the repair manual for your engine code (CDL, BHZ, BWA, and others).</p>
@@ -300,46 +325,7 @@
   <li><b>Two neighbouring cylinders both low:</b> suspect the head gasket between them.</li>
 </ul>
 <p>For a clearer diagnosis, follow up with a leak-down test. You can hear where the air escapes: the intake means an intake valve, the exhaust means an exhaust valve, the oil filler or crankcase means the rings, and bubbles in the coolant mean the head gasket.</p>
-
-<h2>Reassembly</h2>
-<ol class="steps">
-  <li>
-    <div>
-      <div class="t">Refit the spark plugs</div>
-      <div class="h">Thread them in by hand first. The aluminium head is easy to cross-thread. Torque to 25&nbsp;Nm, dry, with the engine cold.</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div class="t">Refit the coils</div>
-      <div class="h">Push them down firmly until they seat.</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div class="t">Refit the harness and connectors</div>
-      <div class="h">Fit the coil harness carrier to the valve cover with the T20 screws, snug on the plastic carrier, then connect the coil connectors and check that they click.</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div class="t">Restore fuel and the cover</div>
-      <div class="h">Refit the fuel pump fuse or relay, and the engine cover.</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div class="t">Start the engine</div>
-      <div class="h">Turn the ignition on a few times so fuel pressure builds, then start it.</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div class="t">Clear fault codes</div>
-      <div class="h">Read and clear them in VCDS. Misfire and fuel-pressure codes are normal after the test.</div>
-    </div>
-  </li>
-</ol>
+</div>
 
 </div>
 <script>
@@ -384,6 +370,184 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
     } else fallback();
   });
 });
+(function(){
+  const dryInputs=[...document.querySelectorAll('input[data-kind="dry"]')];
+  const wetInputs=[...document.querySelectorAll('input[data-kind="wet"]')];
+  const verdict=document.getElementById("verdict");
+  if(!verdict||dryInputs.length!==4) return;
+
+  function parsePsi(raw){
+    const t=String(raw).trim().replace(/\s/g,"");
+    if(t==="") return null;
+    if(!/^\d+([.,]\d+)?$/.test(t)) return NaN;
+    const n=Number(t.replace(",","."));
+    if(!Number.isFinite(n)||n>400) return NaN;
+    return n;
+  }
+  function fmt(n){
+    const r=Math.round(n*10)/10;
+    return Number.isInteger(r)?String(r):r.toFixed(1);
+  }
+  function listCyls(indexes){
+    const n=indexes.map(i=>i+1);
+    if(n.length===1) return "Cylinder "+n[0];
+    if(n.length===2) return "Cylinders "+n[0]+" and "+n[1];
+    return "Cylinders "+n.slice(0,-1).join(", ")+", and "+n[n.length-1];
+  }
+  function paint(input, cls){
+    const td=input.parentElement;
+    td.classList.remove("bad","warn");
+    if(cls) td.classList.add(cls);
+  }
+  function wetKind(dry, wet){
+    const delta=wet-dry;
+    if(delta<-1) return "lower";
+    if(delta>=20||(dry>0&&delta/dry>=0.15)) return "rings";
+    if(delta<7) return "barely";
+    return "middle";
+  }
+  function wetSentence(i, dry, wet){
+    const kind=wetKind(dry, wet);
+    const d=fmt(Math.abs(wet-dry));
+    const name="Cylinder "+(i+1);
+    if(kind==="lower") return name+" reads lower wet ("+fmt(wet)+" psi) than dry ("+fmt(dry)+" psi). Repeat it. Oil should not lower the reading.";
+    if(kind==="rings") return name+" rose by "+d+" psi when wet. That points to the piston rings or the cylinder wall.";
+    if(kind==="barely") return name+" changed by "+d+" psi when wet. That points to the valves, carbon on the seat, or the head gasket.";
+    return name+" rose by "+d+" psi, which sits between those two results. That is inconclusive. A leak-down test is the next step.";
+  }
+  function oneLow(i, v, avg, isOut, hasWet){
+    let s="Cylinder "+(i+1)+" is at "+fmt(v)+" psi";
+    if(v<100) s+=", below the wear limit of about 100 psi";
+    else if(v<170) s+=", below the healthy range of about 170–200 psi";
+    if(isOut) s+=", "+fmt(avg-v)+" psi under the average";
+    s+=hasWet?".":". Do a wet test on it.";
+    return s;
+  }
+
+  function assess(){
+    const dry=dryInputs.map(el=>parsePsi(el.value));
+    const wet=wetInputs.map(el=>parsePsi(el.value));
+    document.querySelector(".wet-results").classList.toggle("show", dry.some(v=>typeof v==="number"&&v<170));
+    const known=[];
+    dry.forEach((v,i)=>{ if(typeof v==="number") known.push(i); });
+    const avg=known.length?known.reduce((s,i)=>s+dry[i],0)/known.length:0;
+    const outlier=i=>known.length>=2&&typeof dry[i]==="number"&&(avg-dry[i]>45||(avg-dry[i])/avg>0.10);
+    const low=i=>typeof dry[i]==="number"&&(dry[i]<170||outlier(i));
+
+    dryInputs.forEach((el,i)=>{
+      const v=dry[i];
+      el.setAttribute("aria-invalid", Number.isNaN(v)?"true":"false");
+      if(typeof v!=="number") paint(el, null);
+      else if(v<100||outlier(i)) paint(el, "bad");
+      else if(v<170) paint(el, "warn");
+      else paint(el, null);
+    });
+    wetInputs.forEach((el,i)=>{
+      const w=wet[i];
+      el.setAttribute("aria-invalid", Number.isNaN(w)?"true":"false");
+      if(typeof w!=="number"||typeof dry[i]!=="number"||!low(i)){ paint(el, null); return; }
+      const kind=wetKind(dry[i], w);
+      if(w<100||kind==="barely"||kind==="lower") paint(el, "bad");
+      else if(kind==="middle"||w<170) paint(el, "warn");
+      else paint(el, null);
+    });
+
+    const paras=[];
+    if(!known.length){ verdict.replaceChildren(); return; }
+    const lows=known.filter(low);
+    const highs=known.filter(i=>dry[i]>220);
+    const nears=known.filter(i=>dry[i]<20);
+    const even=known.every(i=>!outlier(i));
+    const allLowEven=known.length===4&&lows.length===4&&even;
+    const allHighEven=known.length===4&&highs.length===4&&even;
+
+    function wetLines(indexes){
+      return indexes.filter(i=>typeof wet[i]==="number"&&low(i)).map(i=>wetSentence(i, dry[i], wet[i]));
+    }
+
+    if(nears.length&&!allLowEven){
+      const who=listCyls(nears);
+      const many=nears.length>1;
+      paras.push(who+" "+(many?"are":"is")+" near zero. Repeat "+(many?"those cylinders":"it")+" once. If the reading stays there, there is a large leak: a valve that is not sealing, piston damage, or the tester was not sealed in the hole.");
+    }
+
+    if(allHighEven){
+      paras.push("All four are high and even, above about 220 psi. Direct injection often builds carbon on the piston crowns, which raises compression. A gauge that reads high is the other possibility.");
+    } else if(allLowEven){
+      let t="All four are low by a similar amount. Repeat the test with a hot engine, a full battery, and the throttle held open. A weak crank or a closed throttle lowers every reading. If it repeats, the cause is even wear or a timing-belt fault. Follow up with a leak-down test or a timing check.";
+      if(known.some(i=>dry[i]<100)) t+=" These readings are also below the wear limit of about 100 psi.";
+      paras.push(t);
+      wetLines(lows).forEach(s=>paras.push(s));
+    } else if(known.length===4&&lows.length===2){
+      const a=lows[0], b=lows[1];
+      const wa=typeof wet[a]==="number", wb=typeof wet[b]==="number";
+      if(Math.abs(a-b)===1){
+        const ka=wa?wetKind(dry[a], wet[a]):"", kb=wb?wetKind(dry[b], wet[b]):"";
+        if(wa&&wb&&ka==="rings"&&kb==="rings"){
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both rose clearly when wet. That points to the rings or the bore on both of them. A gasket between them is less likely.");
+        } else if(wa&&wb&&(ka==="barely"||ka==="lower")&&(kb==="barely"||kb==="lower")){
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both stayed low after the wet test. The head gasket between them is the first suspect.");
+        } else if(!wa&&!wb){
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both low. The head gasket between them is the first suspect. A wet test on each will narrow it down: a clear rise points to the rings, and little change points to the gasket or the valves.");
+        } else {
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both low. The head gasket between them is the first suspect until the wet tests agree.");
+          wetLines(lows).forEach(s=>paras.push(s));
+          lows.forEach(i=>{ if(typeof wet[i]!=="number"&&dry[i]>=20) paras.push("Do a wet test on cylinder "+(i+1)+"."); });
+        }
+      } else {
+        paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are both low. They are not neighbours, so these are two separate faults. They do not share a gasket face.");
+        const missing=lows.filter(i=>typeof wet[i]!=="number"&&dry[i]>=20);
+        if(missing.length===2) paras.push("Do a wet test on each.");
+        else if(missing.length===1) paras.push("Do a wet test on cylinder "+(missing[0]+1)+".");
+        wetLines(lows).forEach(s=>paras.push(s));
+      }
+    } else if(known.length===4&&lows.length===1){
+      const i=lows[0];
+      if(dry[i]>=20) paras.push(oneLow(i, dry[i], avg, outlier(i), typeof wet[i]==="number"));
+      if(typeof wet[i]==="number") paras.push(wetSentence(i, dry[i], wet[i]));
+    } else if(known.length===4&&lows.length===3){
+      paras.push(listCyls(lows)+" are low, so this is not a single gasket between one pair. A leak-down test is the next step.");
+      const missing=lows.filter(i=>typeof wet[i]!=="number"&&dry[i]>=20);
+      if(missing.length) paras.push("A wet test on "+listCyls(missing).replace(/^Cylinders /,"cylinders ").replace(/^Cylinder /,"cylinder ")+" can separate ring sealing from the valves.");
+      wetLines(lows).forEach(s=>paras.push(s));
+    } else if(known.length===4&&lows.length===4){
+      const worst=lows.slice().sort((a,b)=>dry[a]-dry[b])[0];
+      paras.push("All four are low, and cylinder "+(worst+1)+" is lower than the rest at "+fmt(dry[worst])+" psi.");
+      wetLines(lows).forEach(s=>paras.push(s));
+    } else if(lows.length&&known.length<4){
+      lows.forEach(i=>{
+        if(dry[i]<20) return;
+        paras.push(oneLow(i, dry[i], avg, outlier(i), typeof wet[i]==="number"));
+        if(typeof wet[i]==="number") paras.push(wetSentence(i, dry[i], wet[i]));
+      });
+    } else if(known.length===4&&!lows.length&&!highs.length){
+      const above=known.filter(i=>dry[i]>200);
+      if(above.length) paras.push(listCyls(above)+" "+(above.length>1?"are":"is")+" a little above the typical 200 psi top.");
+      else paras.push("All four look healthy and even.");
+    } else if(known.length<4&&!lows.length&&!highs.length){
+      paras.push("These look healthy so far. The spread can change once every cylinder is filled in.");
+    }
+
+    if(!allHighEven&&highs.length){
+      paras.push(listCyls(highs)+" "+(highs.length>1?"are":"is")+" above about 220 psi. Direct injection often builds carbon on the piston crowns, which raises compression. A gauge that reads high is the other possibility.");
+    }
+    if(lows.length){
+      paras.push("A needle that climbs slowly points to the rings. One that jumps on the first stroke and then stalls points to a valve.");
+    }
+    if(known.length<4&&(lows.length||highs.length)){
+      paras.push("This uses only the cylinders filled in so far.");
+    }
+
+    verdict.replaceChildren();
+    paras.forEach(text=>{
+      const p=document.createElement("p");
+      p.textContent=text;
+      verdict.appendChild(p);
+    });
+  }
+
+  dryInputs.concat(wetInputs).forEach(el=>el.addEventListener("input", assess));
+})();
 </script>
 </body>
 </html>
