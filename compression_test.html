@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compression test</title>
+<style>
+  :root, html[data-theme="light"]{
+    --bg:#f3f3ef; --panel:#fff; --panel2:#ecece8; --line:#d2d2ca;
+    --fg:#1c1c1c; --dim:#5c5c5c; --dimmer:#7a7a7a;
+    --code-fg:#333; --note-edge:#c8c8c0;
+    --info:#1565c0; --info-bg:#e8f1fb;
+    --mat-bg:#fff6e8; --mat-line:#c9842a;
+    --tool-bg:#e8f1fb; --tool-line:#1565c0;
+    --link:#1a6fb5; --link-h:#0d4f86;
+  }
+  html[data-theme="dark"]{
+    --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
+    --fg:#e8e8e8; --dim:#a8a8a8; --dimmer:#7d7d7d;
+    --code-fg:#dcdcdc; --note-edge:#5d5d5d;
+    --info:#64b5f6; --info-bg:#18304d;
+    --mat-bg:#3d3018; --mat-line:#e0a44a;
+    --tool-bg:#18304d; --tool-line:#64b5f6;
+    --link:#7aa9d8; --link-h:#9cc4e8;
+  }
+  html{color-scheme:light}
+  html[data-theme="dark"]{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 72px}
+  .back{margin:0 0 10px;font-size:13px}
+  .back a{color:var(--link);text-decoration:none}
+  .back a:hover{text-decoration:underline;color:var(--link-h)}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 6px}
+  .top h1{margin:0;flex:1}
+  h1{font-size:26px;font-weight:600;margin:0 0 6px}
+  h2{font-size:19px;font-weight:600;margin:44px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
+  h3{font-size:15px;font-weight:600;margin:24px 0 6px}
+  p{margin:0 0 12px;color:var(--dim)}
+  p.lede{margin-bottom:8px}
+  p b, ul.points b, .h b{color:var(--fg)}
+  button.pill{background:var(--panel);color:var(--dim);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  button.pill:hover{background:var(--panel2);color:var(--fg)}
+  ul.points{margin:0 0 12px;padding-left:1.25em;color:var(--dim)}
+  ul.points li{margin:0 0 8px}
+  .cards{display:flex;flex-direction:column;gap:12px;margin:20px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);
+        border-radius:6px;padding:12px 14px}
+  .card.shopping{background:var(--mat-bg);border-color:var(--mat-line);border-left-width:4px}
+  .card.tools{background:var(--tool-bg);border-color:var(--tool-line);border-left-width:4px}
+  .card .nm{font-weight:600;font-size:15px}
+  .card ul{margin:10px 0 0;padding:0;list-style:none}
+  .card li{display:flex;justify-content:space-between;gap:16px;
+           padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+  .card li:first-child{border-top:0;padding-top:0}
+  .card .qty{color:var(--dim);white-space:nowrap}
+  .card.shopping label{display:flex;align-items:baseline;gap:10px;width:100%;cursor:pointer}
+  .card.shopping .item{flex:1}
+  .card.shopping input{accent-color:var(--mat-line);margin:0}
+  .card.shopping input:checked ~ .item,
+  .card.shopping input:checked ~ .qty,
+  .card.shopping input:checked ~ .item button.copy{text-decoration:line-through;color:var(--dimmer)}
+  .card.shopping button.copy{
+    font-family:Consolas,"SF Mono",monospace;font-size:.9em;line-height:inherit;
+    background:var(--panel2);border:0;border-radius:3px;padding:1px 5px;
+    color:var(--code-fg);cursor:pointer;vertical-align:baseline}
+  .card.shopping button.copy:hover{background:var(--line)}
+  .card.shopping button.copy:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+  .card.shopping button.copy.copied{color:var(--fg);text-decoration:none}
+  .card.tools ul{list-style:disc;padding-left:1.25em}
+  .card.tools li{display:list-item;border-top:0;padding:3px 0}
+  ol.steps{margin:8px 0 0;padding:0;list-style:none;counter-reset:step}
+  ol.steps li{display:flex;gap:14px;align-items:flex-start;
+              background:var(--panel);border:1px solid var(--line);
+              border-radius:6px;padding:12px 14px;margin:0 0 8px}
+  ol.steps li::before{
+    counter-increment:step;content:counter(step);
+    flex:0 0 22px;height:22px;border-radius:50%;
+    background:var(--panel2);color:var(--fg);
+    font-size:12px;font-weight:600;line-height:22px;text-align:center}
+  ol.steps .t{font-weight:600;color:var(--fg)}
+  ol.steps .h{color:var(--dim);font-size:13px;margin-top:2px}
+  .tblwrap{overflow-x:auto;max-width:720px}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+  th,td{text-align:left;padding:8px 10px;border:1px solid var(--line);vertical-align:middle}
+  th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  td.row{font-weight:600;color:var(--fg);white-space:nowrap}
+  td.blank{height:2.6em}
+  .note{background:var(--panel);border-left:3px solid var(--note-edge);border-radius:0 5px 5px 0;
+        padding:12px 16px;margin:18px 0}
+  .note p{margin:0;color:var(--dim)}
+  .note b{color:var(--fg)}
+  .note.alert{background:var(--info-bg);border:1px solid var(--info);border-left-width:5px;
+        padding:14px 16px}
+  .note.alert p{color:var(--fg)}
+  .note.alert b{color:var(--info)}
+  .actions{display:flex;gap:8px;flex:0 0 auto}
+  @media print{
+    @page{margin:16mm}
+    :root, html[data-theme="light"], html[data-theme="dark"]{
+      color-scheme:light;
+      --bg:#fff; --fg:#000; --dim:#1a1a1a; --dimmer:#1a1a1a;
+      --panel:#fff; --panel2:#fff; --line:#000;
+      --code-fg:#000; --note-edge:#000;
+      --info:#000; --info-bg:transparent;
+      --mat-bg:transparent; --mat-line:#000;
+      --tool-bg:transparent; --tool-line:#000;
+      --link:#000; --link-h:#000;
+    }
+    body{background:#fff !important;color:#000}
+    .wrap{max-width:none;padding:0}
+    .back, #themeBtn, #printBtn{display:none !important}
+    a, p, h1, h2, h3, th, .card .nm, .card .qty, ol.steps .t, ol.steps .h, .note p, .note b,
+    ul.points, ul.points b{color:#000}
+    .card, .card.shopping, .card.tools, ol.steps li, .note, .note.alert{
+      background:transparent !important;border-color:#000;box-shadow:none}
+    .card.shopping button.copy{background:transparent !important;border:0;padding:0;color:#000}
+    ol.steps li::before{background:transparent !important;color:#000;border:1px solid #000}
+    h2, h3{break-after:avoid;page-break-after:avoid}
+    h2{margin:16px 0 8px;padding-top:10px}
+    .card, ol.steps li, .note, tr{break-inside:avoid;page-break-inside:avoid}
+    td.blank{height:2.6em}
+  }
+</style>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<h1>Compression test</h1>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+</div>
+<p class="lede">A dry compression test of all four cylinders, with a wet test if a reading is low.</p>
+
+<div class="cards">
+  <div class="card shopping">
+    <div class="nm">Shopping list (optional)</div>
+    <ul>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">NGK Iridium IX BKR7EIX (<button type="button" class="copy" data-copy="NGK 2667" title="Click to copy">NGK 2667</button>)</span>
+          <span class="qty">×4</span>
+        </label>
+      </li>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">Audi R8 coilpack <button type="button" class="copy" data-copy="06E905115G" title="Click to copy">06E905115G</button></span>
+          <span class="qty">×4</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+  <div class="card tools">
+    <div class="nm">Tools needed</div>
+    <ul>
+      <li><span>T20 Torx bit</span></li>
+      <li><span>Compression tester (M14×1.25)</span></li>
+      <li><span>Spark plug socket (16&nbsp;mm) and extension</span></li>
+      <li><span>Torque wrench (covering 25&nbsp;Nm)</span></li>
+      <li><span>Compressed air or a vacuum, to clean around the coils</span></li>
+      <li><span>Battery charger (optional)</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Preparation</h2>
+<ul class="points">
+  <li>The battery must be fully charged. Low cranking speed gives falsely low readings.</li>
+  <li>Test with the engine warm. Cold readings run lower.</li>
+  <li>Write down the gauge reading for every cylinder <b>before</b> moving on.</li>
+</ul>
+
+<h2>Procedure</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Warm the engine</div>
+      <div class="h">Run it until the coolant reaches operating temperature, about 90&nbsp;°C, then switch it off.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Disable fuel delivery</div>
+      <div class="h">Remove the fuel pump fuse or relay (check the fuse diagram for your car), or unplug the fuel pump control module. Start the engine and let it run until it stalls, so the low-pressure side is depressurised. <b>High-pressure fuel lines must never be opened.</b></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Remove the engine cover</div>
+      <div class="h">Pull it up. No tools are needed. Skip this step if the cover is not installed.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Unplug the coil connectors</div>
+      <div class="h">Press the locking tab and pull off all four.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Move the coil harness aside</div>
+      <div class="h">Remove the T20 screws holding the wiring harness carrier to the valve cover and lift the harness aside.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Pull the coils</div>
+      <div class="h">Blow or vacuum clean around the coils so no debris falls into the cylinders, then pull the coils. Zip ties can help. Keep them in cylinder order.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Remove the spark plugs</div>
+      <div class="h">Loosen all four, then remove them and keep them in order. Inspect them while they are out.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Fit the tester</div>
+      <div class="h">Screw the compression tester hand-tight into cylinder 1.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Crank the engine</div>
+      <div class="h">Hold the throttle fully open and crank until the gauge stops rising, usually 4–6 compression strokes. Use the same number of strokes on every cylinder.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Record and move on</div>
+      <div class="h">Write down the reading, release the pressure, and repeat the tester and cranking steps for cylinders 2–4.</div>
+    </div>
+  </li>
+</ol>
+
+<h2>Results</h2>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Cyl 1</th>
+      <th>Cyl 2</th>
+      <th>Cyl 3</th>
+      <th>Cyl 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="row">Dry (bar / psi)</td>
+      <td class="blank"></td>
+      <td class="blank"></td>
+      <td class="blank"></td>
+      <td class="blank"></td>
+    </tr>
+    <tr>
+      <td class="row">Wet (bar / psi)</td>
+      <td class="blank"></td>
+      <td class="blank"></td>
+      <td class="blank"></td>
+      <td class="blank"></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Interpreting the results</h2>
+<ul class="points">
+  <li><b>Healthy engine (warm):</b> about 11.5–14&nbsp;bar (roughly 170–200&nbsp;psi).</li>
+  <li><b>Wear limit:</b> about 7&nbsp;bar (about 100&nbsp;psi). Readings below that indicate a serious problem.</li>
+  <li><b>Variation between cylinders:</b> max about 3&nbsp;bar, or about 10% from the average.</li>
+</ul>
+<div class="note">
+  <p>Verify these limits against ElsaWin or the repair manual for your engine code (CDL, BHZ, BWA, and others).</p>
+</div>
+<p>The variation between cylinders often tells you more than the absolute number, because gauges and cranking speed vary.</p>
+
+<h3>Wet test, if one cylinder or all of them are low</h3>
+<p>Pour about 5&nbsp;ml (one teaspoon) of engine oil through the spark plug hole and retest that cylinder.</p>
+<ul class="points">
+  <li><b>Reading clearly goes up:</b> piston rings or the cylinder wall are the likely cause.</li>
+  <li><b>Reading barely changes:</b> valves (sealing, or carbon on the valve seat, a known EA113 problem because it is direct injection) or the head gasket.</li>
+  <li><b>Two neighbouring cylinders both low:</b> suspect the head gasket between them.</li>
+</ul>
+<p>For a clearer diagnosis, follow up with a leak-down test. You can hear where the air escapes: the intake means an intake valve, the exhaust means an exhaust valve, the oil filler or crankcase means the rings, and bubbles in the coolant mean the head gasket.</p>
+
+<h2>Reassembly</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Refit the spark plugs</div>
+      <div class="h">Thread them in by hand first. The aluminium head is easy to cross-thread. Torque to 25&nbsp;Nm, dry, with the engine cold.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Refit the coils</div>
+      <div class="h">Push them down firmly until they seat.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Refit the harness and connectors</div>
+      <div class="h">Fit the coil harness carrier to the valve cover with the T20 screws, snug on the plastic carrier, then connect the coil connectors and check that they click.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Restore fuel and the cover</div>
+      <div class="h">Refit the fuel pump fuse or relay, and the engine cover.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Start the engine</div>
+      <div class="h">Turn the ignition on a few times so fuel pressure builds, then start it.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Clear fault codes</div>
+      <div class="h">Read and clear them in VCDS. Misfire and fuel-pressure codes are normal after the test.</div>
+    </div>
+  </li>
+</ol>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+})();
+document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
+  const shown=btn.textContent;
+  btn.addEventListener("click", ev=>{
+    ev.preventDefault();
+    ev.stopPropagation();
+    const text=btn.getAttribute("data-copy")||shown;
+    const done=()=>{
+      btn.classList.add("copied");
+      btn.textContent="Copied";
+      clearTimeout(btn._copyT);
+      btn._copyT=setTimeout(()=>{btn.classList.remove("copied");btn.textContent=shown;},1100);
+    };
+    const fallback=()=>{
+      const ta=document.createElement("textarea");
+      ta.value=text; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      let went=false;
+      try{ went=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      if(went) done();
+    };
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else fallback();
+  });
+});
+</script>
+</body>
+</html>
