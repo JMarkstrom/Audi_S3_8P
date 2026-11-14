@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>360° thrust bearing upgrade for the 06F 2.0T block</title>
+<style>
+  :root, html[data-theme="light"]{
+    --bg:#f3f3ef; --panel:#fff; --panel2:#ecece8; --line:#d2d2ca;
+    --fg:#1c1c1c; --dim:#5c5c5c; --dimmer:#7a7a7a;
+    --code-fg:#333; --note-edge:#c8c8c0;
+    --mat-bg:#fff6e8; --mat-line:#c9842a;
+    --tool-bg:#e8f1fb; --tool-line:#1565c0;
+    --link:#1a6fb5; --link-h:#0d4f86;
+  }
+  html[data-theme="dark"]{
+    --bg:#2b2b2b; --panel:#333; --panel2:#3a3a3a; --line:#4a4a4a;
+    --fg:#e8e8e8; --dim:#a8a8a8; --dimmer:#7d7d7d;
+    --code-fg:#dcdcdc; --note-edge:#5d5d5d;
+    --mat-bg:#3d3018; --mat-line:#e0a44a;
+    --tool-bg:#18304d; --tool-line:#64b5f6;
+    --link:#7aa9d8; --link-h:#9cc4e8;
+  }
+  html{color-scheme:light}
+  html[data-theme="dark"]{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 72px}
+  .back{margin:0 0 10px;font-size:13px}
+  .back a{color:var(--link);text-decoration:none}
+  .back a:hover{text-decoration:underline;color:var(--link-h)}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 6px}
+  .top h1{margin:0;flex:1}
+  h1{font-size:26px;font-weight:600;margin:0 0 6px}
+  h2{font-size:19px;font-weight:600;margin:44px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
+  p{margin:0 0 12px;color:var(--dim)}
+  p.lede{margin-bottom:8px}
+  p b{color:var(--fg)}
+  a{color:var(--link);text-decoration:none}
+  a:hover{text-decoration:underline;color:var(--link-h)}
+  code{font-family:Consolas,"SF Mono",monospace;font-size:.9em;
+       background:var(--panel2);padding:1px 5px;border-radius:3px;color:var(--code-fg)}
+  button.pill{background:var(--panel);color:var(--dim);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  button.pill:hover{background:var(--panel2);color:var(--fg)}
+  ul.files{margin:0 0 12px;padding-left:1.25em}
+  ul.files li{margin:0 0 6px}
+  .cards{display:flex;flex-direction:column;gap:12px;margin:20px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);
+        border-radius:6px;padding:12px 14px}
+  .card.shopping{background:var(--mat-bg);border-color:var(--mat-line);border-left-width:4px}
+  .card.tools{background:var(--tool-bg);border-color:var(--tool-line);border-left-width:4px}
+  .card.tools ul{list-style:disc;padding-left:1.25em}
+  .card.tools li{display:list-item;border-top:0;padding:3px 0}
+  .card .nm{font-weight:600;font-size:15px;color:var(--fg)}
+  .card ul{margin:10px 0 0;padding:0;list-style:none}
+  .card li{display:flex;justify-content:space-between;gap:16px;
+           padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+  .card li:first-child{border-top:0;padding-top:0}
+  .card .qty{color:var(--dim);white-space:nowrap}
+  .card.shopping label{display:flex;align-items:baseline;gap:10px;width:100%;cursor:pointer}
+  .card.shopping .item{flex:1}
+  .card.shopping input{accent-color:var(--mat-line);margin:0}
+  .card.shopping input:checked ~ .item,
+  .card.shopping input:checked ~ .qty,
+  .card.shopping input:checked ~ .item button.copy{text-decoration:line-through;color:var(--dimmer)}
+  .card.shopping button.copy{
+    font-family:Consolas,"SF Mono",monospace;font-size:.9em;line-height:inherit;
+    background:var(--panel2);border:0;border-radius:3px;padding:1px 5px;
+    color:var(--code-fg);cursor:pointer;vertical-align:baseline}
+  .card.shopping button.copy:hover{background:var(--line)}
+  .card.shopping button.copy:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+  .card.shopping button.copy.copied{color:var(--fg);text-decoration:none}
+  ol.steps{margin:8px 0 0;padding:0;list-style:none;counter-reset:step}
+  ol.steps li{display:flex;gap:14px;align-items:flex-start;
+              background:var(--panel);border:1px solid var(--line);
+              border-radius:6px;padding:12px 14px;margin:0 0 8px}
+  ol.steps li::before{
+    counter-increment:step;content:counter(step);
+    flex:0 0 22px;height:22px;border-radius:50%;
+    background:var(--panel2);color:var(--fg);
+    font-size:12px;font-weight:600;line-height:22px;text-align:center}
+  ol.steps .t{font-weight:600;color:var(--fg)}
+  ol.steps .h{color:var(--dim);font-size:13px;margin-top:2px}
+  .note{background:var(--panel);border-left:3px solid var(--note-edge);border-radius:0 5px 5px 0;
+        padding:12px 16px;margin:18px 0}
+  .note p{margin:0;color:var(--dim)}
+  .note b{color:var(--fg)}
+  .actions{display:flex;gap:8px;flex:0 0 auto}
+  @media print{
+    @page{margin:16mm}
+    :root, html[data-theme="light"], html[data-theme="dark"]{
+      color-scheme:light;
+      --bg:#fff; --fg:#000; --dim:#1a1a1a; --dimmer:#1a1a1a;
+      --panel:#fff; --panel2:#fff; --line:#000;
+      --code-fg:#000; --note-edge:#000;
+      --mat-bg:transparent; --mat-line:#000;
+      --tool-bg:transparent; --tool-line:#000;
+      --link:#000; --link-h:#000;
+    }
+    body{background:#fff !important;color:#000}
+    .wrap{max-width:none;padding:0}
+    .back, #themeBtn, #printBtn{display:none !important}
+    a, p, h1, h2, code, .card .nm, .card .qty, ol.steps .t, ol.steps .h, .note p, .note b{color:#000}
+    code, .card, .card.shopping, .card.tools, ol.steps li, .note{
+      background:transparent !important;border-color:#000;box-shadow:none}
+    ol.steps li::before{background:transparent !important;color:#000;border:1px solid #000}
+    h2{margin:16px 0 8px;padding-top:10px;break-after:avoid;page-break-after:avoid}
+    .card, ol.steps li, .note{break-inside:avoid;page-break-inside:avoid}
+    .card.shopping button.copy{background:transparent !important;border:0;padding:0;color:#000}
+  }
+</style>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<h1>360° thrust bearing upgrade for the 06F 2.0T block</h1>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+</div>
+<p class="lede">Machine the centre main cap on the EA113 2.0 TFSI so an extra thrust washer shares the load when the clutch is pressed.</p>
+
+<div class="cards">
+  <div class="card shopping">
+    <div class="nm">Shopping list</div>
+    <ul>
+      <li>
+        <label>
+          <input type="checkbox">
+          <span class="item">Thrust washer <button type="button" class="copy" data-copy="06A105637A" title="Click to copy">06A105637A</button></span>
+          <span class="qty">×1</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+  <div class="card tools">
+    <div class="nm">Tools needed</div>
+    <ul>
+      <li><span>Files</span></li>
+      <li><span>1200 grit sandpaper</span></li>
+      <li><span>1500 grit sandpaper</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Introduction</h2>
+<p>The EA113 2.0 TFSI (06F block) controls crankshaft end play with a single pair of thrust washers. They sit in the centre (3rd) main bearing, one on each side of the block half. The main cap itself carries no thrust washers. The earlier 058-block 1.8T used four washers, two in the block and two in the cap, so the full 360° around the crank journal took thrust load. On the EA113, every time the clutch pedal is pressed, the release force pushes the crankshaft toward the timing-belt end of the engine. That load goes through just one of the two washers and over time, in some configurations, can lead to failures.</p>
+<p>As a preventative solution you may consider machining the centre main cap so it takes an extra thrust washer and shares the load.</p>
+<div class="note">
+  <p><b>Note:</b> This modification needs the engine to come apart. It's most worth doing during a bottom-end rebuild or when building a tuned manual car with an uprated clutch. On DSG cars (DQ250 wet clutch), there is no pedal-driven thrust load, so the benefit is smaller.</p>
+</div>
+
+<h2>Main cap modification</h2>
+<p>The 3rd main cap is removed and machined.</p>
+<ul class="files">
+  <li><a href="assets/Main_Cap_R2_11_15_2020.DXF">Main cap drawing (.DXF)</a></li>
+  <li><a href="assets/Main_Cap_R2_11_15_2020.PDF">Main cap drawing (PDF)</a></li>
+</ul>
+
+<h2>Thrust washer modification</h2>
+<p>Once the cap is machined, the stock thrust washer must be modified to fit the recess in the main cap.</p>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Hold the washer</div>
+      <div class="h">Mask the bearing and hold it with clamps or a vice. Do not damage it.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Cut the ends to fit</div>
+      <div class="h">Cut or file the ends until the washer fits the machined recess, about 3&nbsp;mm.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Chamfer the ends</div>
+      <div class="h">Once the washer fits the housing, chamfer the cut ends.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Finish the surface</div>
+      <div class="h">Work the cut edges with 1200 grit, then 1500 grit sandpaper.</div>
+    </div>
+  </li>
+</ol>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+})();
+document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
+  const shown=btn.textContent;
+  btn.addEventListener("click", ev=>{
+    ev.preventDefault();
+    ev.stopPropagation();
+    const text=btn.getAttribute("data-copy")||shown;
+    const done=()=>{
+      btn.classList.add("copied");
+      btn.textContent="Copied";
+      clearTimeout(btn._copyT);
+      btn._copyT=setTimeout(()=>{btn.classList.remove("copied");btn.textContent=shown;},1100);
+    };
+    const fallback=()=>{
+      const ta=document.createElement("textarea");
+      ta.value=text; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      let went=false;
+      try{ went=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      if(went) done();
+    };
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else fallback();
+  });
+});
+</script>
+</body>
+</html>
