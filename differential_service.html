@@ -80,6 +80,29 @@
         padding:14px 16px}
   .note.alert p{color:var(--fg)}
   .note.alert b{color:var(--info)}
+  .actions{display:flex;gap:8px;flex:0 0 auto}
+  @media print{
+    @page{margin:16mm}
+    :root, html[data-theme="light"], html[data-theme="dark"]{
+      color-scheme:light;
+      --bg:#fff; --fg:#000; --dim:#1a1a1a; --dimmer:#1a1a1a;
+      --panel:#fff; --panel2:#fff; --line:#000;
+      --code-fg:#000; --note-edge:#000;
+      --info:#000; --info-bg:transparent;
+      --mat-bg:transparent; --mat-line:#000;
+      --tool-bg:transparent; --tool-line:#000;
+      --link:#000; --link-h:#000;
+    }
+    body{background:#fff !important;color:#000}
+    .wrap{max-width:none;padding:0}
+    .back, #themeBtn, #printBtn{display:none !important}
+    a, p, h1, h2, code, .card .nm, .card .qty, ol.steps .t, ol.steps .h, .note p, .note b{color:#000}
+    code, .card, .card.shopping, .card.tools, ol.steps li, .note, .note.alert{
+      background:transparent !important;border-color:#000;box-shadow:none}
+    ol.steps li::before{background:transparent !important;color:#000;border:1px solid #000}
+    h2{margin:16px 0 8px;padding-top:10px;break-after:avoid;page-break-after:avoid}
+    .card, ol.steps li, .note{break-inside:avoid;page-break-inside:avoid}
+  }
 </style>
 <script>
 (function(){
@@ -96,7 +119,10 @@
 <p class="back"><a href="index.html">Back</a></p>
 <div class="top">
 <h1>Differential service</h1>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
 <button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
 </div>
 <p class="lede">Oil change for the front differential (transfer box) and the rear differential
 (final drive). The same steps apply to both units.</p>
@@ -192,6 +218,7 @@
     sync();
   };
   sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
 })();
 </script>
 </body>

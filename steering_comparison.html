@@ -120,6 +120,43 @@
   .note.alert.danger b{color:var(--danger)}
   .note.alert.info{background:var(--info-bg);border-color:var(--info)}
   .note.alert.info b{color:var(--info)}
+  .actions{display:flex;gap:8px;flex:0 0 auto}
+  @media print{
+    @page{margin:16mm}
+    :root, html[data-theme="light"], html[data-theme="dark"]{
+      color-scheme:light;
+      --bg:#fff; --fg:#000; --dim:#1a1a1a; --dimmer:#1a1a1a;
+      --panel:#fff; --panel2:#fff; --line:#000; --grid:#bdbdbd;
+      --ok:#000; --warn:#000; --danger:#000;
+      --code-fg:#000; --note-edge:#000;
+      --pill-on:#fff; --pill-on-line:#000;
+      --tip-bg:#fff; --tip-line:#000;
+      --alert-bg:transparent; --danger-bg:transparent;
+      --info:#000; --info-bg:transparent;
+      --built-bg:transparent; --built-line:#000;
+    }
+    body{background:#fff !important;color:#000}
+    .wrap{max-width:none;padding:0}
+    #themeBtn, #printBtn, .tip, .slider input[type=range]{display:none !important}
+    a, p, h1, h2, h3, code, .sub, .note p, .note b, dt, dd, .legend button{color:#000}
+    code, .note, .note.alert, .note.alert.danger, .note.alert.info,
+    .car, .car.built, .chart{
+      background:transparent !important;border-color:#000;box-shadow:none}
+    h2, h3{break-after:avoid;page-break-after:avoid}
+    h2{margin:16px 0 8px;padding-top:10px}
+    .note, .car, .chart{break-inside:avoid;page-break-inside:avoid}
+    .ctl button.pill{display:none !important}
+    .ctl button.pill.on{
+      display:inline !important;background:transparent !important;border:0;color:#000;
+      padding:0;font-weight:600;font-size:13px}
+    .cars, .grid2{display:block}
+    .car, .grid2>div{margin:0 0 10px}
+    button.copy{background:transparent !important;border:0;padding:0;color:#000}
+    .chart svg, .legend svg, .car .nm svg{
+      print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    details.intro > :not(summary){display:block !important}
+    details.intro::details-content{content-visibility:visible !important;display:block !important}
+  }
 </style>
 <script>
 (function(){
@@ -135,7 +172,10 @@
 
 <div class="top">
 <h1>ZF electric power steering maps compared</h1>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
 <button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
 </div>
 <p class="lede">Unlike earlier generations of Audi, Volkswagen, Škoda and other VAG vehicles, where steering
 characteristics were determined primarily by the mechanical hardware, PQ35-platform vehicles
@@ -283,6 +323,13 @@ const DSH = {}; CARS.forEach(c=>DSH[c.key]=c.dash);
     sync();
   };
   sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+  const intro=document.querySelector("details.intro");
+  if(intro){
+    let wasOpen=false;
+    window.addEventListener("beforeprint",()=>{ wasOpen=intro.open; intro.open=true; });
+    window.addEventListener("afterprint",()=>{ intro.open=wasOpen; });
+  }
 })();
 
 /* line-style swatch so overlapping curves stay tellable apart */

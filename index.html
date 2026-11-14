@@ -27,6 +27,22 @@
   ul{margin:0;padding:0;list-style:none}
   a{color:var(--link);text-decoration:none}
   a:hover{text-decoration:underline;color:var(--link-h)}
+  section{margin:0 0 28px}
+  section h2{margin:0 0 8px;font-size:15px;font-weight:600}
+  .actions{display:flex;gap:8px;flex:0 0 auto}
+  @media print{
+    @page{margin:16mm}
+    :root, html[data-theme="light"], html[data-theme="dark"]{
+      color-scheme:light;
+      --bg:#fff; --fg:#000; --dim:#1a1a1a; --line:#000;
+      --panel:#fff; --link:#000; --link-h:#000;
+    }
+    body{background:#fff !important;color:#000}
+    .wrap{max-width:none;padding:0}
+    #themeBtn, #printBtn{display:none !important}
+    a{color:#000;text-decoration:none}
+    h1, h2{color:#000}
+  }
 </style>
 <script>
 (function(){
@@ -41,14 +57,25 @@
 <div class="wrap">
 <div class="top">
 <h1>Audi S3 8P Owner's guides</h1>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
 <button type="button" class="pill" id="themeBtn">Dark view</button>
 </div>
+</div>
+<section>
+<h2>Maintenance</h2>
 <ul>
   <li><a href="differential_service.html">Differential service</a></li>
   <li><a href="dsg_service.html">DSG service</a></li>
   <li><a href="haldex_service.html">Haldex service (with pump replacement)</a></li>
+</ul>
+</section>
+<section>
+<h2>Tuning &amp; Performance</h2>
+<ul>
   <li><a href="steering_comparison.html">ZF electric power steering maps compared</a></li>
 </ul>
+</section>
 </div>
 <script>
 (function(){
@@ -63,6 +90,7 @@
     sync();
   };
   sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
 })();
 </script>
 </body>
