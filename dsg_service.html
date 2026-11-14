@@ -58,8 +58,15 @@
   .card.shopping .item{flex:1}
   .card.shopping input{accent-color:var(--mat-line);margin:0}
   .card.shopping input:checked ~ .item,
-  .card.shopping input:checked ~ .qty{text-decoration:line-through;color:var(--dimmer)}
-  .card.shopping input:checked ~ .item code{text-decoration:line-through;color:var(--dimmer)}
+  .card.shopping input:checked ~ .qty,
+  .card.shopping input:checked ~ .item button.copy{text-decoration:line-through;color:var(--dimmer)}
+  .card.shopping button.copy{
+    font-family:Consolas,"SF Mono",monospace;font-size:.9em;line-height:inherit;
+    background:var(--panel2);border:0;border-radius:3px;padding:1px 5px;
+    color:var(--code-fg);cursor:pointer;vertical-align:baseline}
+  .card.shopping button.copy:hover{background:var(--line)}
+  .card.shopping button.copy:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+  .card.shopping button.copy.copied{color:var(--fg);text-decoration:none}
   .card.tools ul{list-style:disc;padding-left:1.25em}
   .card.tools li{display:list-item;border-top:0;padding:3px 0}
   ol.steps{margin:8px 0 0;padding:0;list-style:none;counter-reset:step}
@@ -95,6 +102,7 @@
     ol.steps li::before{background:transparent !important;color:#000;border:1px solid #000}
     h2{margin:16px 0 8px;padding-top:10px;break-after:avoid;page-break-after:avoid}
     .card, ol.steps li, .note{break-inside:avoid;page-break-inside:avoid}
+    .card.shopping button.copy{background:transparent !important;border:0;padding:0;color:#000}
   }
 </style>
 <script>
@@ -126,26 +134,26 @@
       <li>
         <label>
           <input type="checkbox">
-          <span class="item">DSG oil <code>G052182A2</code></span>
+          <span class="item">DSG oil <button type="button" class="copy" data-copy="G052182A2" title="Click to copy">G052182A2</button></span>
           <span class="qty">6&nbsp;L</span>
         </label>
       </li>
       <li>
         <label>
           <input type="checkbox">
-          <span class="item">DSG oil filter <code>02E305051C</code></span>
+          <span class="item">DSG oil filter <button type="button" class="copy" data-copy="02E305051C" title="Click to copy">02E305051C</button></span>
         </label>
       </li>
       <li>
         <label>
           <input type="checkbox">
-          <span class="item">Filter o-ring <code>N91084501</code></span>
+          <span class="item">Filter o-ring <button type="button" class="copy" data-copy="N91084501" title="Click to copy">N91084501</button></span>
         </label>
       </li>
       <li>
         <label>
           <input type="checkbox">
-          <span class="item">Gasket for fill bolt <code>N0438092</code></span>
+          <span class="item">Gasket for fill bolt <button type="button" class="copy" data-copy="N0438092" title="Click to copy">N0438092</button></span>
         </label>
       </li>
     </ul>
@@ -266,6 +274,33 @@
   sync();
   document.getElementById("printBtn").onclick=()=>window.print();
 })();
+document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
+  const shown=btn.textContent;
+  btn.addEventListener("click", ev=>{
+    ev.preventDefault();
+    ev.stopPropagation();
+    const text=btn.getAttribute("data-copy")||shown;
+    const done=()=>{
+      btn.classList.add("copied");
+      btn.textContent="Copied";
+      clearTimeout(btn._copyT);
+      btn._copyT=setTimeout(()=>{btn.classList.remove("copied");btn.textContent=shown;},1100);
+    };
+    const fallback=()=>{
+      const ta=document.createElement("textarea");
+      ta.value=text; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      let went=false;
+      try{ went=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      if(went) done();
+    };
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else fallback();
+  });
+});
 </script>
 </body>
 </html>
