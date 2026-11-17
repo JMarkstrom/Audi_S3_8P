@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Service reminder reset (oil change and inspection) with VCDS</title>
+<link rel="stylesheet" href="assets/guide.css">
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<div class="title">
+<p class="sheet">Audi S3 8P</p>
+<h1>Service reminder reset (oil change and inspection) with VCDS</h1>
+</div>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+</div>
+<p class="lede">Reset the oil-change and inspection reminders in the instrument cluster with VCDS.</p>
+
+<div class="cards">
+  <div class="card tools">
+    <div class="nm">Tools needed</div>
+    <ul>
+      <li><span>VCDS</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Quick method (SRI Reset)</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Connect VCDS</div>
+      <div class="h">Use the car's OBD-II port.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Turn on the ignition</div>
+      <div class="h">Leave the engine off.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Open the instruments module</div>
+      <div class="h">In VCDS, select Control Module → 17 – Instruments.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Open Adaptation</div>
+      <div class="h">Select Adaptation – 10.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Run SRI Reset</div>
+      <div class="h">Click SRI Reset and select Oil Change Service or Inspection Service. Run both if you did both.</div>
+    </div>
+  </li>
+</ol>
+
+<h2>Manual method (if SRI Reset doesn't work)</h2>
+<p>In Adaptation, set each channel to 0, one at a time, using Test and then Save.</p>
+<ul class="points">
+  <li><b>Oil change:</b> channel 40 (distance since service) and 41 (time since service).</li>
+  <li><b>Inspection:</b> channel 53 (distance since inspection) and 55 (time since inspection).</li>
+</ul>
+<div class="note alert">
+  <p><b>Note:</b> Don't change channels 42–52. They set the service interval itself, not the counters. This car is coded for fixed intervals: 15,000&nbsp;km or 365&nbsp;days for oil changes, and 30,000&nbsp;km or 730&nbsp;days for inspections.</p>
+</div>
+<p><b>Results:</b> Cycle the ignition and check that the instrument cluster shows a new service interval.</p>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+})();
+</script>
+</body>
+</html>
