@@ -246,7 +246,7 @@ feel, so treat them as supporting detail rather than the main event.</p>
 <h2>Torque-indexed falloff maps</h2>
 <p>Two maps share the assist family's input axis, both starting at a power of two - 128 and 1024 -
 and decaying from there. That makes them fixed-point multipliers with 1.0 at zero input, so they
-are shown normalised to their own starting value.</p>
+are shown normalized to their own starting value.</p>
 <p>The same two constants also appear as standalone scalars at <code>0x05E514</code> and <code>0x05E1D4</code>, though VW Golf GTI and VW Golf R set the first of those to 192 while the map still starts at 128, so the pairing is suggestive rather than certain.</p>
 <div class="legend" id="decayLegend"></div>
 <div class="grid2">
@@ -259,7 +259,7 @@ are shown normalised to their own starting value.</p>
     <div class="chart" id="decay1"></div>
   </div>
 </div>
-<p class="sub">Multiplier, normalised to each curve's own value at zero input, versus input
+<p class="sub">Multiplier, normalized to each curve's own value at zero input, versus input
 (raw counts) - Source: records 0x05E520 and 0x05E574. VW Golf GTI and VW Golf R retain about 77% of their starting value at the top of both maps, where the others fall to 20-39%.</p>
 
 <h2>The ten-point map with a geometric input axis</h2>
@@ -577,7 +577,7 @@ function drawAssist(){
   tabs(document.getElementById("assistTabs"),D.assist.map(x=>x.label),aTab,i=>{aTab=i;drawAssist();});
   const o=document.getElementById("assistOpts");
   o.innerHTML="";
-  [["Raw counts",false],["Normalise each car to its own peak",true]].forEach(([t,v])=>{
+  [["Raw counts",false],["Normalize each car to its own peak",true]].forEach(([t,v])=>{
     const b=document.createElement("button");
     b.className="pill"+(aNorm===v?" on":""); b.textContent=t;
     b.onclick=()=>{aNorm=v;drawAssist();}; o.appendChild(b);

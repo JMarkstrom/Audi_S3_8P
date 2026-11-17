@@ -118,7 +118,7 @@ figure.drawing img{display:block;width:100%;height:auto;border:1px solid var(--l
   <li>
     <div>
       <div class="t">Disable fuel delivery</div>
-      <div class="h">Remove the fuel pump fuse, typically #27 as shown. Start the engine and let it run until it stalls, so the low-pressure side is depressurised.</div>
+      <div class="h">Remove the fuel pump fuse, typically #27 as shown. Start the engine and let it run until it stalls, so the low-pressure side is depressurized.</div>
       <figure class="drawing">
         <img src="images/fuel-pump-relay-fuse.png" alt="Fuse box diagram with fuel pump fuse 27 outlined in red">
       </figure>
@@ -240,7 +240,7 @@ figure.drawing img{display:block;width:100%;height:auto;border:1px solid var(--l
 <ul class="points">
   <li><b>Reading clearly goes up:</b> piston rings or the cylinder wall are the likely cause.</li>
   <li><b>Reading barely changes:</b> valves (sealing, or carbon on the valve seat, a known EA113 problem because it is direct injection) or the head gasket.</li>
-  <li><b>Two neighbouring cylinders both low:</b> suspect the head gasket between them.</li>
+  <li><b>Two neighboring cylinders both low:</b> suspect the head gasket between them.</li>
 </ul>
 <p>For a clearer diagnosis, follow up with a leak-down test. You can hear where the air escapes: the intake means an intake valve, the exhaust means an exhaust valve, the oil filler or crankcase means the rings, and bubbles in the coolant mean the head gasket.</p>
 </div>
@@ -469,18 +469,18 @@ document.querySelectorAll(".card.shopping button.copy").forEach(btn=>{
       if(Math.abs(a-b)===1){
         const ka=wa?wetKind(dry[a], wet[a]):"", kb=wb?wetKind(dry[b], wet[b]):"";
         if(wa&&wb&&ka==="rings"&&kb==="rings"){
-          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both rose clearly when wet. That points to the rings or the bore on both of them. A gasket between them is less likely.");
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbors and both rose clearly when wet. That points to the rings or the bore on both of them. A gasket between them is less likely.");
         } else if(wa&&wb&&(ka==="barely"||ka==="lower")&&(kb==="barely"||kb==="lower")){
-          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both stayed low after the wet test. The head gasket between them is the first suspect. Valves are the other possibility."+gasketNote);
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbors and both stayed low after the wet test. The head gasket between them is the first suspect. Valves are the other possibility."+gasketNote);
         } else if(!wa&&!wb){
-          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both low. The head gasket between them is the first suspect. A wet test on each will narrow it down: a clear rise points to the rings, and little change points to the gasket or the valves."+gasketNote);
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbors and both low. The head gasket between them is the first suspect. A wet test on each will narrow it down: a clear rise points to the rings, and little change points to the gasket or the valves."+gasketNote);
         } else {
-          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbours and both low. The head gasket between them is the first suspect until the wet tests agree."+gasketNote);
+          paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are neighbors and both low. The head gasket between them is the first suspect until the wet tests agree."+gasketNote);
           wetLines(lows).forEach(s=>paras.push(s));
           lows.forEach(i=>{ if(!isReading(wet[i])&&dry[i]>=LIM.near) paras.push("Do a wet test on cylinder "+(i+1)+"."); });
         }
       } else {
-        paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are both low. They are not neighbours, so these are two separate faults. They do not share a gasket face.");
+        paras.push("Cylinders "+(a+1)+" and "+(b+1)+" are both low. They are not neighbors, so these are two separate faults. They do not share a gasket face.");
         const missing=lows.filter(i=>!isReading(wet[i])&&dry[i]>=LIM.near);
         if(missing.length===2) paras.push("Do a wet test on each.");
         else if(missing.length===1) paras.push("Do a wet test on cylinder "+(missing[0]+1)+".");
