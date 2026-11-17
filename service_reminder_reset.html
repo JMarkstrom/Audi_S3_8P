@@ -39,7 +39,7 @@
   </div>
 </div>
 
-<h2>Quick method (SRI Reset)</h2>
+<h2>Procedure</h2>
 <ol class="steps">
   <li>
     <div>
@@ -55,33 +55,35 @@
   </li>
   <li>
     <div>
-      <div class="t">Open the instruments module</div>
-      <div class="h">In VCDS, select Control Module → 17 – Instruments.</div>
+      <div class="t">Click SRI Reset</div>
+      <div class="h">On the VCDS main screen. Not via 17 – Instruments → Adaptation.</div>
     </div>
   </li>
   <li>
     <div>
-      <div class="t">Open Adaptation</div>
-      <div class="h">Select Adaptation – 10.</div>
+      <div class="t">Wait for the service channels</div>
+      <div class="h">VCDS reads the cluster's service channels. Windows opening and closing on their own is normal.</div>
     </div>
   </li>
   <li>
     <div>
-      <div class="t">Run SRI Reset</div>
-      <div class="h">Click SRI Reset and select Oil Change Service or Inspection Service. Run both if you did both.</div>
+      <div class="t">Choose the operation</div>
+      <div class="h">In the Operation drop-down, choose the applicable entry based on your region and work carried out.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Click Perform SRI</div>
+      <div class="h">VCDS writes the channels and confirms the reset.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Repeat for the other service</div>
+      <div class="h">If you did both an oil change and an inspection, repeat steps 5–6 with the other entry.</div>
     </div>
   </li>
 </ol>
-
-<h2>Manual method (if SRI Reset doesn't work)</h2>
-<p>In Adaptation, set each channel to 0, one at a time, using Test and then Save.</p>
-<ul class="points">
-  <li><b>Oil change:</b> channel 40 (distance since service) and 41 (time since service).</li>
-  <li><b>Inspection:</b> channel 53 (distance since inspection) and 55 (time since inspection).</li>
-</ul>
-<div class="note alert">
-  <p><b>Note:</b> Don't change channels 42–52. They set the service interval itself, not the counters. This car is coded for fixed intervals: 15,000&nbsp;km or 365&nbsp;days for oil changes, and 30,000&nbsp;km or 730&nbsp;days for inspections.</p>
-</div>
 <p><b>Results:</b> Cycle the ignition and check that the instrument cluster shows a new service interval.</p>
 
 </div>
