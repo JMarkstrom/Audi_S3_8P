@@ -98,7 +98,8 @@ ol.steps .h{color:var(--dim);font-size:13px;margin-top:2px}
 .note.alert b{color:var(--info)}
 .actions{display:flex;gap:8px;flex:0 0 auto}
 .wrap > section{margin:0 0 22px}
-.wrap > section h2{margin-top:6px}
+.wrap > section h2{display:inline-flex;align-items:center;gap:8px;margin-top:6px}
+.wrap > section h2 svg{width:18px;height:18px;flex:0 0 auto;color:var(--dim)}
 .wrap > section ul{margin:0;padding:0;list-style:none}
 .wrap > section ul a{display:block;padding:10px 2px;font-size:16px}
 .wrap > section p{max-width:40em}
