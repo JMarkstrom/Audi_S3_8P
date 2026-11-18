@@ -33,6 +33,8 @@ td.warn input{color:var(--warn);font-weight:600}
 .results-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:28px}
 .results-head h2{margin:0}
 figure.drawing{margin:10px 0 0;max-width:631px}
+figure.drawing.cylinders{max-width:720px;margin:8px 0 12px}
+figure.drawing.cylinders figcaption{margin:6px 0 0;font-size:13px;font-weight:600;color:var(--fg)}
 figure.drawing img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;background:#fff}
 @media print{
   :root, html[data-theme="light"], html[data-theme="dark"]{
@@ -158,6 +160,10 @@ figure.drawing img{display:block;width:100%;height:auto;border:1px solid var(--l
     <div>
       <div class="t">Fit the tester</div>
       <div class="h">Screw the compression tester hand-tight into cylinder 1.</div>
+      <figure class="drawing cylinders">
+        <img src="images/tfsi-cylinder-order-transverse.png" alt="EA113 2.0 TFSI cylinder order, seen from the front: cylinder 1 at the timing belt, then 2, 3, and 4 toward the gearbox">
+        <figcaption>TFSI cylinder order (transverse)</figcaption>
+      </figure>
     </div>
   </li>
   <li>
