@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audi magnetic ride cancellation options</title>
+<link rel="stylesheet" href="assets/guide.css">
+<style>
+.tblwrap{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{text-align:left;padding:8px 10px;border:1px solid var(--line);vertical-align:middle}
+th{color:var(--dim);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+td{color:var(--dim)}
+td b{color:var(--fg)}
+td code{white-space:nowrap}
+table th:nth-child(2), table td:nth-child(2){width:1%;white-space:nowrap;padding:8px 8px;text-align:center}
+.flag{width:20px;height:14px;border:1px solid var(--line);border-radius:2px;
+  vertical-align:-2px;margin-right:5px;display:inline-block;overflow:hidden}
+.tblwrap .flag{margin:0;vertical-align:middle}
+button.copy{
+  font-family:Consolas,"SF Mono",monospace;font-size:.9em;line-height:inherit;
+  background:var(--panel2);border:0;border-radius:2px;padding:1px 5px;
+  color:var(--code-fg);cursor:pointer;vertical-align:baseline}
+button.copy:hover{background:var(--line)}
+button.copy:focus-visible{outline:2px solid var(--line);outline-offset:1px}
+button.copy.copied{color:var(--fg)}
+@media print{
+  th, td{color:#000;border-color:#000}
+  tr{break-inside:avoid;page-break-inside:avoid}
+  .flag{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  button.copy{background:transparent !important;border:0;padding:0;color:#000}
+}
+</style>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<div class="title">
+<p class="sheet">Audi S3 8P</p>
+<h1>Audi magnetic ride cancellation options</h1>
+</div>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+</div>
+<p class="lede">When you replace the factory magnetic ride ("Mag Ride") dampers with conventional dampers or coilovers, the damper control module (VCDS address 14, J250) loses the damper coils it expects to see. Left as is, this gives a damper warning, often an ESP warning and a dead ESP Off button. A lit ESP warning may fail a roadworthiness inspection. You therefore need some form of cancellation.</p>
+
+<h2>Cancellation options</h2>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th>Option</th>
+      <th>Origin</th>
+      <th>SKU</th>
+      <th>Cost</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Cloud9 Customs</b></td>
+      <td><svg class="flag" viewBox="0 0 60 30" preserveAspectRatio="none" aria-label="United Kingdom" role="img"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2"/><path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/></svg></td>
+      <td>N/A</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <td><b>The Asian Garage</b></td>
+      <td><svg class="flag" viewBox="0 0 19 10" preserveAspectRatio="none" aria-label="United States" role="img"><rect width="19" height="10" fill="#B22234"/><path d="M0,1.54 H19 M0,3.08 H19 M0,4.62 H19 M0,6.15 H19 M0,7.69 H19 M0,9.23 H19" stroke="#fff" stroke-width="0.77"/><rect width="7.6" height="5.38" fill="#3C3B6E"/></svg></td>
+      <td><button type="button" class="copy" data-copy="R8 Gen 1 (Type 42)" title="Click to copy">R8 Gen 1 (Type 42)</button></td>
+      <td>Low – Medium</td>
+    </tr>
+    <tr>
+      <td><b>Ishikawa Engineering</b></td>
+      <td><svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-label="Japan" role="img"><rect width="3" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#BC002D"/></svg></td>
+      <td><button type="button" class="copy" data-copy="EC-TT8J" title="Click to copy">EC-TT8J</button></td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td><b>KW</b></td>
+      <td><svg class="flag" viewBox="0 0 5 3" preserveAspectRatio="none" aria-label="Germany" role="img"><rect width="5" height="1" fill="#000"/><rect width="5" height="1" y="1" fill="#DD0000"/><rect width="5" height="1" y="2" fill="#FFCE00"/></svg></td>
+      <td><button type="button" class="copy" data-copy="68510248" title="Click to copy">68510248</button></td>
+      <td>High</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+})();
+document.querySelectorAll("button.copy").forEach(btn=>{
+  const shown=btn.textContent;
+  btn.addEventListener("click", ev=>{
+    ev.preventDefault();
+    ev.stopPropagation();
+    const text=btn.getAttribute("data-copy")||shown;
+    const done=()=>{
+      btn.style.minWidth=btn.offsetWidth+"px";
+      btn.classList.add("copied");
+      btn.textContent="Copied";
+      clearTimeout(btn._copyT);
+      btn._copyT=setTimeout(()=>{
+        btn.classList.remove("copied");
+        btn.textContent=shown;
+        btn.style.minWidth="";
+      },1100);
+    };
+    const fallback=()=>{
+      const ta=document.createElement("textarea");
+      ta.value=text; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      let went=false;
+      try{ went=document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      if(went) done();
+    };
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else fallback();
+  });
+});
+</script>
+</body>
+</html>
