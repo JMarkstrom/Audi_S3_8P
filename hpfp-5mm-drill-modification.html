@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5 mm drill modification (HPFP)</title>
+<link rel="stylesheet" href="assets/guide.css">
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("zf-theme");
+    document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p class="back"><a href="index.html">Back</a></p>
+<div class="top">
+<div class="title">
+<p class="sheet">Audi S3 8P</p>
+<h1>5 mm drill modification (HPFP)</h1>
+</div>
+<div class="actions">
+<button type="button" class="pill" id="printBtn">Print</button>
+<button type="button" class="pill" id="themeBtn">Dark view</button>
+</div>
+</div>
+<p class="lede">Enlarge the fuel inlet orifice in the brass fitting on the OEM Hitachi high-pressure fuel pump to reduce inlet restriction on high-power tunes.</p>
+
+<div class="cards">
+  <div class="card shopping">
+    <div class="nm">Shopping list</div>
+    <ul>
+      <li><span class="item">N/A</span></li>
+    </ul>
+  </div>
+  <div class="card tools">
+    <div class="nm">Tools needed</div>
+    <ul>
+      <li><span>14 mm deep socket</span></li>
+      <li><span>Drill</span></li>
+      <li><span>5 mm drill bit</span></li>
+      <li><span>Brake cleaner</span></li>
+      <li><span>Tape (optional)</span></li>
+      <li><span>Bench vice</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Introduction</h2>
+<p>On tuned engines, particularly those running larger turbochargers, the small fuel inlet orifice in the brass fitting on the Hitachi high-pressure fuel pump (HPFP) can become a restriction. The pump may draw fuel faster than the inlet can supply it, potentially causing a drop in inlet pressure and compromising the pump's ability to maintain the requested fuel rail pressure.</p>
+<p>Enlarging the inlet orifice to 5&nbsp;mm is a commonly reported modification intended to reduce this restriction and improve fuel supply to the HPFP. Owners of modified, high-power engines have reported more stable low-pressure fuel supply following this modification.</p>
+<div class="note alert">
+  <p><b>Note:</b> This modification is intended for OEM Hitachi HPFPs only. Some aftermarket pumps, even those advertised with identical part numbers, use different internal designs. These may have an integrated filter basket in the inlet fitting and must not be modified using this procedure. Additionally, some early EA113 applications use a different inlet fitting and fuel hard line. These require the appropriate fitting and hard-line upgrade before this modification can be performed.</p>
+</div>
+
+<h2>Procedure</h2>
+<ol class="steps">
+  <li>
+    <div>
+      <div class="t">Remove the inlet fitting</div>
+      <div class="h">If necessary, apply tape around the fitting to improve the socket's grip and protect its surface. Fully seat the 14&nbsp;mm deep socket on the fitting. Use a firm, controlled motion to break it loose, then unscrew it completely by hand. Remove the fitting from the pump before proceeding.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Secure the fitting for drilling</div>
+      <div class="h">Place the fitting inside the 14&nbsp;mm deep socket and use the socket as a holder. Clamp the socket securely in a bench vice, ensuring that the brass fitting is held firmly without the vice jaws making direct contact with it. Position the fitting with the inlet bore facing upwards, allowing the drill bit to follow the existing bore.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Enlarge the inlet orifice to 5&nbsp;mm</div>
+      <div class="h">Using a 5&nbsp;mm drill bit, carefully drill through the existing restriction. Keep the drill bit aligned with the original bore to avoid damaging the fitting or unnecessarily removing material.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Clean and inspect the fitting</div>
+      <div class="h">Thoroughly clean the fitting using brake cleaner to remove all brass swarf and other debris. Pay particular attention to the internal bore and threads. Ensure that no drilling debris remains before reinstalling the fitting. Inspect the fitting for damage and verify that the bore is clean and unobstructed.</div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <div class="t">Reinstall the inlet fitting</div>
+      <div class="h">If necessary, apply tape to the fitting again to improve the socket's grip. Carefully start the fitting by hand to avoid cross-threading. Hold the pump securely, fully seat the 14&nbsp;mm deep socket and tighten the fitting. Use the manufacturer's specified tightening torque if available. Do not overtighten the brass fitting.</div>
+    </div>
+  </li>
+</ol>
+
+</div>
+<script>
+(function(){
+  const btn=document.getElementById("themeBtn");
+  function sync(){
+    btn.textContent=document.documentElement.getAttribute("data-theme")==="light"?"Dark view":"Light view";
+  }
+  btn.onclick=()=>{
+    const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("zf-theme", next); }catch(e){}
+    sync();
+  };
+  sync();
+  document.getElementById("printBtn").onclick=()=>window.print();
+})();
+</script>
+</body>
+</html>
